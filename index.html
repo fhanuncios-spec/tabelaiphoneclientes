@@ -841,7 +841,6 @@ function calcInstallmentFromCash(cashValue, n){
   return { parcela: Number(parcela.toFixed(2)) };
 }
 
-/* CORREÇÃO PRINCIPAL DO SENA */
 function normalizeMoneyText(text){
   const value = parseBRL(text);
   return Number.isFinite(value) ? formatBRL(value) : "";
@@ -1668,34 +1667,31 @@ const EMOJI_COLOR_MAP = new Map([
 
 function normalizeLine(s){ return (s || "").replace(/\r/g, "").trim(); }
 
-function isStatusHeader(line){
-  const t = String(line || "")
-    .replace(/[📦📱📲💎⌚⌚️🎧]/g, "")
+function cleanHeaderText(line){
+  return String(line || "")
+    .replace(/[📦📱📲💎⌚⌚️🎧✅❗🚨💰💵_]/g, "")
     .replace(/\s+/g, " ")
     .trim()
     .toUpperCase();
+}
 
+/* CORREÇÃO DO QUALITY:
+   agora detecta cabeçalhos como "IPHONE SEMINOVOS QUALITY"
+   e separa corretamente lacrados de seminovos */
+function isStatusHeader(line){
+  const t = cleanHeaderText(line);
   if (!t) return false;
 
-  return [
-    "IPHONE LACRADOS",
-    "IPHONE LACRADO",
-    "IPHONES LACRADOS",
-    "IPHONES LACRADO",
-    "IPHONE SEMINOVOS",
-    "IPHONE SEMINOVO",
-    "IPHONES SEMINOVOS",
-    "IPHONES SEMINOVO",
-    "LACRADOS",
-    "SEMINOVOS",
-    "UPGRADE",
-    "UPGRADES"
-  ].includes(t);
+  if (t.includes("SEMINOVO")) return true;
+  if (t.includes("LACRADO")) return true;
+  if (t === "LACRADOS" || t === "SEMINOVOS" || t === "UPGRADE" || t === "UPGRADES") return true;
+
+  return false;
 }
 
 function detectStatus(line){
   if (!isStatusHeader(line)) return null;
-  const t = String(line || "").toUpperCase();
+  const t = cleanHeaderText(line);
   if (t.includes("SEMINOVO")) return "SEMINOVOS";
   if (t.includes("UPGRADE")) return "UPGRADE";
   if (t.includes("LACRADO")) return "LACRADOS";
@@ -2061,7 +2057,6 @@ function parseSenaList(rawText, sourceName){
   return { data };
 }
 
-/* CORREÇÃO PRINCIPAL DO BR10 */
 function parseBr10List(rawText, sourceName){
   const lines = rawText.split("\n").map(normalizeLine).filter(Boolean);
   const data = {};
