@@ -755,46 +755,46 @@ const CARD_FEES = {
 };
 
 const MODEL_IMAGES = {
-  "iPhone 11": "assets//iphone-11-oficial.jpeg",
-  "iPhone 12": "assets//iphone-12-oficial.jpg",
-  "iPhone 12 Pro": "assets/img/iphone-12-pro-oficial.jpg",
-  "iPhone 12 Pro Max": "assets/img/iphone-12-pro-max-oficial.jpg",
+  "iPhone 11": "assets/img/iphone-11-oficial.png",
+  "iPhone 12 Pro Max": "assets/img/iphone-12-pro-max-oficial.png",
+  "iPhone 12 Pro": "assets/img/iphone-12-pro-oficial.png",
+  "iPhone 12": "assets/img/iphone-12-oficial.png",
 
-  "iPhone 13": "assets/img/iphone-13-oficial.jpeg",
-  "iPhone 13 Pro": "assets/img/iphone-13-pro-oficial.png",
   "iPhone 13 Pro Max": "assets/img/iphone-13-pro-max-oficial.png",
+  "iPhone 13 Pro": "assets/img/iphone-13-pro-oficial.png",
+  "iPhone 13": "assets/img/iphone-13-oficial.png",
 
-  "iPhone 14": "assets/img/iphone-14-oficial.jpg",
-  "iPhone 14 Plus": "assets/img/iphone-14-plus-oficial.jpg",
-  "iPhone 14 Pro": "assets/img/iphone-14-pro-oficial.png",
   "iPhone 14 Pro Max": "assets/img/iphone-14-pro-max-oficial.png",
+  "iPhone 14 Pro": "assets/img/iphone-14-pro-oficial.png",
+  "iPhone 14 Plus": "assets/img/iphone-14-plus-oficial.png",
+  "iPhone 14": "assets/img/iphone-14-oficial.png",
 
-  "iPhone 15": "assets/img/iphone-15-oficial.jpg",
-  "iPhone 15 Plus": "assets/img/iphone-15-plus-oficial.jpg",
-  "iPhone 15 Pro": "assets/img/iphone-15-pro-oficial.jpeg",
-  "iPhone 15 Pro Max": "assets/img/iphone-15-pro-max-oficial.jpeg",
+  "iPhone 15 Pro Max": "assets/img/iphone-15-pro-max-oficial.png",
+  "iPhone 15 Pro": "assets/img/iphone-15-pro-oficial.png",
+  "iPhone 15 Plus": "assets/img/iphone-15-plus-oficial.png",
+  "iPhone 15": "assets/img/iphone-15-oficial.png",
 
-  "iPhone 16E": "assets/img/iphone-16e-oficial.jpg",
-  "iPhone 16": "assets/img/iphone-16-oficial.jpg",
-  "iPhone 16 Plus": "assets/img/iphone-16-plus-oficial.jpg",
-  "iPhone 16 Pro": "assets/img/iphone-16-pro-oficial.jpg",
-  "iPhone 16 Pro Max": "assets/img/iphone-16-pro-max-oficial.jpg",
+  "iPhone 16 Pro Max": "assets/img/iphone-16-pro-max-oficial.png",
+  "iPhone 16 Pro": "assets/img/iphone-16-pro-oficial.png",
+  "iPhone 16 Plus": "assets/img/iphone-16-plus-oficial.png",
+  "iPhone 16E": "assets/img/iphone-16e-oficial.png",
+  "iPhone 16": "assets/img/iphone-16-oficial.png",
 
-  "iPhone 17E": "assets/img/iphone-17e-oficial.jpg",
-  "iPhone 17 Air": "assets/img/iphone-17-air-oficial.jpg",
-  "iPhone 17": "assets/img/iphone17.jpg",
-  "iPhone 17 Pro": "assets/img/iphone-17-pro-oficial.jpg",
-  "iPhone 17 Pro Max": "assets/img/17promaxcores.jpg",
+  "iPhone 17 Pro Max": "assets/img/iphone-17-pro-max-oficial.png",
+  "iPhone 17 Pro": "assets/img/iphone-17-pro-oficial.png",
+  "iPhone 17 Air": "assets/img/iphone-17-air-oficial.png",
+  "iPhone 17E": "assets/img/iphone-17e-oficial.png",
+  "iPhone 17": "assets/img/iphone-17-oficial.png",
 
-  "Apple Watch SE 2": "assets/img/apple-watch-se-2-oficial.jpeg",
-  "Apple Watch SE 3": "assets/img/apple-watch-se-3-oficial.jpeg",
-  "Apple Watch Series 11 S11": "assets/img/apple-watch-series-11-oficial.png",
-  "Apple Watch Ultra 3": "assets/img/apple-watch-ultra-3-oficial.jpg",
+  "Apple Watch Series 11": "assets/img/apple-watch-series-11-oficial.png",
+  "Apple Watch Ultra 3": "assets/img/apple-watch-ultra-3-oficial.png",
+  "Apple Watch SE 3": "assets/img/apple-watch-se-3-oficial.png",
+  "Apple Watch SE 2": "assets/img/apple-watch-se-2-oficial.png",
 
-  "iPad 11": "assets/img/ipad-11-oficial.jpeg",
-  "AirPods 4": "assets/img/airpods-4-oficial.png",
+  "iPad 11": "assets/img/ipad-11-oficial.png",
   "AirPods Pro 3": "assets/img/airpods-pro-3-oficial.png",
-  "AirTag": "assets/img/airtag-pack-4-oficial.jpeg"
+  "AirPods 4": "assets/img/airpods-4-oficial.png",
+  "AirTag": "assets/img/airtag-pack-4-oficial.png"
 };
 
 const FALLBACK_IMAGE = "assets/img/sem-imagem.png";
@@ -821,9 +821,7 @@ function calcInstallmentFromCash(cashValue, n){
 }
 
 function normalizeMoneyText(text){
-  const digits = String(text || "").replace(/[^\d]/g,"");
-  if (!digits) return "";
-  const value = Number(digits);
+  const value = parseBRL(text);
   return Number.isFinite(value) ? formatBRL(value) : "";
 }
 
@@ -1839,7 +1837,8 @@ function cleanModelOnly(text){
        .replace(/\bULTRA\b/ig, "Ultra")
        .replace(/\bMAX\b/ig, "Max")
        .replace(/\bSERIES\b/ig, "Series")
-       .replace(/\bSE\b/ig, "SE");
+       .replace(/\bSE\b/ig, "SE")
+       .replace(/\bS11\b/ig, "Series 11");
 
   return s;
 }
@@ -1865,8 +1864,10 @@ function modelFilterValue(item){
 
 function imageModelKey(item){
   const model = cleanModelOnly(item.title || item.raw);
+  const normalizedModel = normalizeText(model);
   const orderedKeys = Object.keys(MODEL_IMAGES).sort((a, b) => b.length - a.length);
-  const found = orderedKeys.find(key => model.toLowerCase().includes(key.toLowerCase()));
+
+  const found = orderedKeys.find(key => normalizedModel.includes(normalizeText(key)));
   return found || "";
 }
 
@@ -2018,7 +2019,7 @@ function parseSenaList(rawText, sourceName){
       title: titleLine.replace(/^📱\s*/, "").trim(),
       raw: `${titleLine} ${batteryLine} ${rawColorsText}`.trim(),
       details: batteryLine ? batteryLine.replace(/^🔋/, "Bateria: ").trim() : "",
-      price: normalizeMoneyText(priceLine),
+      price: formatBRL(parseBRL(priceLine)),
       colorsWords: extractColorsFromWords(rawColorsText),
       colorsEmoji: colorLines.flatMap(extractColorsFromEmojiLine),
       isUpgrade: false
@@ -2217,401 +2218,4 @@ function cardHtml(it, key, cfg){
       data-status="${escapeHtml(it.status || "")}"
       data-category="${escapeHtml(it.category || "")}"
       data-model="${escapeHtml(it._model || "")}"
-      data-capacity="${escapeHtml(it._capacity || "")}"
-      data-colors="${escapeHtml((it._colors || []).join("|"))}"
-      data-price="${escapeHtml(String(it._priceNumber || ""))}"
-      data-search="${escapeHtml(it._searchBlob || "")}"
-    >
-      <div class="badge ${badgeClass}">${badgeText}</div>
-      ${upgradeBadge}
-
-      <div class="image-wrap">
-        <img
-          class="product-image"
-          src="${escapeHtml(it._imagePath || FALLBACK_IMAGE)}"
-          alt="${escapeHtml(displayTitle(it))}"
-          loading="lazy"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-        />
-        <div class="image-fallback" style="display:none">
-          <div>Sem imagem enviada ainda</div>
-          <div>${escapeHtml(it._imagePath || FALLBACK_IMAGE)}</div>
-        </div>
-        <div class="image-label">${escapeHtml(it._imageLabel || "Imagem do produto")}</div>
-      </div>
-
-      <h4 class="name">${escapeHtml(displayTitle(it))}</h4>
-      <p class="details">${escapeHtml(extraDetails || (colorsTxt ? `Cores: ${colorsTxt}` : ""))}</p>
-      ${chips.length ? `<div class="chips">${chips.join("")}</div>` : ""}
-
-      <div class="price-row">
-        <div class="price">
-          <span>${escapeHtml(it.price || "Consultar")}</span>
-          ${i6 ? `<span class="installment">6x ${escapeHtml(i6)}</span>` : ""}
-          ${i10 ? `<span class="installment">10x ${escapeHtml(i10)}</span>` : ""}
-          ${i12 ? `<span class="installment">12x ${escapeHtml(i12)}</span>` : ""}
-        </div>
-        <div class="actions">
-          <button class="copy" type="button" data-key="${escapeHtml(key)}">📋 Copiar texto</button>
-          <button class="copy" type="button" data-image-key="${escapeHtml(key)}">🖼️ Copiar imagem</button>
-        </div>
-      </div>
-    </article>
-  `;
-}
-
-function renderBlock(container, cfg, parsed){
-  const data = parsed.data;
-  const statusOrder = ["LACRADOS","SEMINOVOS","UPGRADE"];
-  const index = new Map();
-
-  const html = statusOrder
-    .filter(st => data[st] && Object.keys(data[st]).length)
-    .map(st => {
-      const block = data[st];
-      const total = countItems(block);
-      const cats = Object.keys(block).sort((a, b) => catWeight(a) - catWeight(b) || a.localeCompare(b, "pt-BR"));
-
-      const catsHtml = cats.map(cat => {
-        const items = block[cat];
-
-        const byLine = {};
-        for (const it of items){
-          const g = it.lineGroup || "OUTROS";
-          byLine[g] ??= [];
-          byLine[g].push(it);
-        }
-        const lineKeys = Object.keys(byLine).sort((a, b) => {
-          const na = parseInt((a.match(/\d+/) || [])[0] || "999", 10);
-          const nb = parseInt((b.match(/\d+/) || [])[0] || "999", 10);
-          return na - nb || a.localeCompare(b, "pt-BR");
-        });
-
-        const onlyOutros = lineKeys.length === 1 && lineKeys[0] === "OUTROS";
-
-        let linesHtml = "";
-        if (!onlyOutros){
-          linesHtml = lineKeys.map(lk => {
-            const cards = byLine[lk].map((it, i) => {
-              const key = `${cfg.key}::${st}::${cat}::${lk}::${i}`;
-              index.set(key, it);
-              return cardHtml(it, key, cfg);
-            }).join("");
-
-            return `
-              <details class="line" data-line="1">
-                <summary>
-                  <div class="line-title">${escapeHtml(lk)}</div>
-                  <div class="line-hint">Toque para abrir</div>
-                </summary>
-                <div class="line-block">
-                  <div class="grid">${cards}</div>
-                </div>
-              </details>
-            `;
-          }).join("");
-        }else{
-          const cards = items.map((it, i) => {
-            const key = `${cfg.key}::${st}::${cat}::${i}`;
-            index.set(key, it);
-            return cardHtml(it, key, cfg);
-          }).join("");
-
-          linesHtml = `
-            <div class="line-block">
-              <div class="grid">${cards}</div>
-            </div>
-          `;
-        }
-
-        return `
-          <details class="cat" data-cat="1">
-            <summary>
-              <div class="cat-left">
-                <div class="cat-title">${escapeHtml(cat)}</div>
-                <div class="cat-sub">${items.length} itens</div>
-              </div>
-              <div class="count">Toque para abrir</div>
-            </summary>
-            ${linesHtml}
-          </details>
-        `;
-      }).join("");
-
-      const h3Class = st === "LACRADOS" ? "h3-blue" : (st === "UPGRADE" ? "h3-upgrade" : "h3-green");
-      const label = st === "LACRADOS" ? "📦 Lacrados" : (st === "UPGRADE" ? "⬆️ Upgrades" : "✨ Seminovos");
-
-      return `
-        <div class="section" data-section="1">
-          <div class="section-head">
-            <h3 class="${h3Class}">${label}</h3>
-            <div class="count">${total} itens</div>
-          </div>
-          ${catsHtml}
-        </div>
-      `;
-    }).join("");
-
-  container.innerHTML = `
-    <div class="block" data-block="1">
-      <div class="block-head">
-        <div class="block-left">
-          <div class="store-badge ${cfg.badgeClass}">${cfg.icon} ${escapeHtml(cfg.title)}</div>
-          <div class="block-sub">Toque em “Copiar texto” ou “Copiar imagem”</div>
-        </div>
-        <div class="block-sub block-sub-stack">
-          <span>6x • 10x • 12x calculado pela máquina</span>
-          <span>Parcelamos em até 18x no cartão</span>
-        </div>
-      </div>
-      ${html || `<div class="section"><div class="foot">Nenhum item encontrado nesta lista.</div></div>`}
-      <div class="foot">Valores à vista • Parcelamento: consultar</div>
-    </div>
-  `;
-
-  container.querySelector(".block").addEventListener("click", async (e) => {
-    const textBtn = e.target.closest("button[data-key]");
-    if (textBtn){
-      const key = textBtn.getAttribute("data-key");
-      const item = index.get(key);
-      if (item) await copyText(buildMessage(item));
-      return;
-    }
-
-    const imageBtn = e.target.closest("button[data-image-key]");
-    if (imageBtn){
-      const key = imageBtn.getAttribute("data-image-key");
-      const item = index.get(key);
-      if (item) await copyImage(item._imagePath || FALLBACK_IMAGE, buildMessage(item));
-    }
-  });
-}
-
-function populateSelect(select, values, placeholder){
-  select.innerHTML = "";
-  const first = document.createElement("option");
-  first.value = "";
-  first.textContent = placeholder;
-  select.appendChild(first);
-
-  values.forEach(value => {
-    const opt = document.createElement("option");
-    opt.value = value;
-    opt.textContent = value;
-    select.appendChild(opt);
-  });
-}
-
-function formatCountText(n){
-  return `${n} item${n === 1 ? "" : "s"} encontrado${n === 1 ? "" : "s"}`;
-}
-
-function parseInputMoney(value){
-  const digits = String(value || "").replace(/[^\d]/g, "");
-  return digits ? Number(digits) : NaN;
-}
-
-function buildFilterOptions(items){
-  const models = uniqueArray(items.map(it => it._model)).sort((a,b) => a.localeCompare(b, "pt-BR"));
-  const capacities = uniqueArray(items.map(it => it._capacity)).sort((a,b) => {
-    const na = parseInt((a.match(/\d+/) || [])[0] || "0", 10);
-    const nb = parseInt((b.match(/\d+/) || [])[0] || "0", 10);
-    return na - nb || a.localeCompare(b, "pt-BR");
-  });
-  const colors = uniqueArray(items.flatMap(it => it._colors || [])).sort((a,b) => a.localeCompare(b, "pt-BR"));
-
-  populateSelect(document.getElementById("filterModel"), models, "Todos");
-  populateSelect(document.getElementById("filterCapacity"), capacities, "Todos");
-  populateSelect(document.getElementById("filterColor"), colors, "Todas");
-}
-
-function getCurrentFilters(){
-  return {
-    search: normalizeText(document.getElementById("filterSearch").value),
-    model: document.getElementById("filterModel").value,
-    capacity: document.getElementById("filterCapacity").value,
-    color: normalizeText(document.getElementById("filterColor").value),
-    status: document.getElementById("filterStatus").value,
-    min: parseInputMoney(document.getElementById("filterMin").value),
-    max: parseInputMoney(document.getElementById("filterMax").value)
-  };
-}
-
-function cardMatchesFilters(card, filters){
-  const search = card.dataset.search || "";
-  const model = card.dataset.model || "";
-  const capacity = card.dataset.capacity || "";
-  const colors = normalizeText((card.dataset.colors || "").replaceAll("|", " "));
-  const status = card.dataset.status || "";
-  const price = Number(card.dataset.price || 0);
-
-  if (filters.search && !search.includes(filters.search)) return false;
-  if (filters.model && model !== filters.model) return false;
-  if (filters.capacity && capacity !== filters.capacity) return false;
-  if (filters.color && !colors.includes(filters.color)) return false;
-  if (filters.status && status !== filters.status) return false;
-  if (Number.isFinite(filters.min) && price < filters.min) return false;
-  if (Number.isFinite(filters.max) && price > filters.max) return false;
-
-  return true;
-}
-
-function applyFilters(){
-  const filters = getCurrentFilters();
-  const cards = [...document.querySelectorAll("[data-card='1']")];
-  let visibleCards = 0;
-
-  cards.forEach(card => {
-    const visible = cardMatchesFilters(card, filters);
-    card.style.display = visible ? "" : "none";
-    if (visible) visibleCards += 1;
-  });
-
-  document.querySelectorAll("[data-line='1']").forEach(line => {
-    const hasVisible = [...line.querySelectorAll("[data-card='1']")].some(card => card.style.display !== "none");
-    line.style.display = hasVisible ? "" : "none";
-  });
-
-  document.querySelectorAll("[data-cat='1']").forEach(cat => {
-    const hasVisible = [...cat.querySelectorAll("[data-card='1']")].some(card => card.style.display !== "none");
-    cat.style.display = hasVisible ? "" : "none";
-  });
-
-  document.querySelectorAll("[data-section='1']").forEach(section => {
-    const hasVisible = [...section.querySelectorAll("[data-card='1']")].some(card => card.style.display !== "none");
-    section.style.display = hasVisible ? "" : "none";
-  });
-
-  document.querySelectorAll("[data-block='1']").forEach(block => {
-    const hasVisible = [...block.querySelectorAll("[data-card='1']")].some(card => card.style.display !== "none");
-    block.style.display = hasVisible ? "" : "none";
-  });
-
-  document.getElementById("resultsPill").textContent = visibleCards ? formatCountText(visibleCards) : "Nenhum item encontrado";
-  document.getElementById("emptyState").classList.toggle("show", visibleCards === 0);
-}
-
-function bindFilters(items){
-  buildFilterOptions(items);
-
-  const ids = ["filterSearch","filterModel","filterCapacity","filterColor","filterStatus","filterMin","filterMax"];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    const evt = el.tagName === "SELECT" ? "change" : "input";
-    el.addEventListener(evt, applyFilters, { passive:true });
-  });
-
-  document.getElementById("clearFiltersBtn").addEventListener("click", () => {
-    document.getElementById("filterSearch").value = "";
-    document.getElementById("filterModel").value = "";
-    document.getElementById("filterCapacity").value = "";
-    document.getElementById("filterColor").value = "";
-    document.getElementById("filterStatus").value = "";
-    document.getElementById("filterMin").value = "";
-    document.getElementById("filterMax").value = "";
-    applyFilters();
-  }, { passive:true });
-}
-
-function render(){
-  formatUpdatedPill();
-
-  const app = document.getElementById("app");
-  app.innerHTML = "";
-
-  const parsedManga = parseList(RAW_MANGA, "MANGA");
-  const parsedTech = parseList(RAW_TECH, "ImportTech");
-  const parsedQuality = parseList(RAW_QUALITY, "QUALITY PREMIUM");
-  const parsedSena = parseSenaList(RAW_SENA, "SENA");
-  const parsedBr10 = parseList(RAW_BR10, "ATACADO BR10");
-
-  [parsedManga, parsedTech, parsedQuality, parsedSena, parsedBr10].forEach(parsed => {
-    for (const status of Object.keys(parsed.data || {})){
-      for (const cat of Object.keys(parsed.data[status] || {})){
-        parsed.data[status][cat] = parsed.data[status][cat].map(enrichItem);
-      }
-    }
-  });
-
-  const allItems = [
-    ...flattenParsed(parsedManga),
-    ...flattenParsed(parsedTech),
-    ...flattenParsed(parsedQuality),
-    ...flattenParsed(parsedSena),
-    ...flattenParsed(parsedBr10)
-  ];
-
-  const mangaWrap = document.createElement("div");
-  const techWrap = document.createElement("div");
-  const qualityWrap = document.createElement("div");
-  const senaWrap = document.createElement("div");
-  const br10Wrap = document.createElement("div");
-
-  renderBlock(mangaWrap, {
-    key:"MANGA",
-    title:"Aparelhos MANGA",
-    badgeClass:"manga",
-    icon:"🥭",
-    cardTone:"manga"
-  }, parsedManga);
-
-  renderBlock(techWrap, {
-    key:"TECH",
-    title:"Aparelhos ImportTech",
-    badgeClass:"tech",
-    icon:"⚡",
-    cardTone:"tech"
-  }, parsedTech);
-
-  renderBlock(qualityWrap, {
-    key:"QUALITY",
-    title:"Aparelhos QUALITY PREMIUM",
-    badgeClass:"quality",
-    icon:"🏆",
-    cardTone:"quality"
-  }, parsedQuality);
-
-  renderBlock(senaWrap, {
-    key:"SENA",
-    title:"Aparelhos Sena",
-    badgeClass:"sena",
-    icon:"🔥",
-    cardTone:"sena"
-  }, parsedSena);
-
-  renderBlock(br10Wrap, {
-    key:"BR10",
-    title:"Aparelhos ATACADO BR10",
-    badgeClass:"br10",
-    icon:"🚨",
-    cardTone:"br10"
-  }, parsedBr10);
-
-  app.appendChild(mangaWrap);
-  app.appendChild(techWrap);
-  app.appendChild(qualityWrap);
-  app.appendChild(senaWrap);
-  app.appendChild(br10Wrap);
-
-  bindFilters(allItems);
-  applyFilters();
-}
-
-let allOpen = false;
-function setAllDetails(open){
-  document.querySelectorAll("details.cat, details.line").forEach(d => {
-    d.open = !!open;
-  });
-  allOpen = !!open;
-  const btn = document.getElementById("toggleAllBtn");
-  btn.textContent = allOpen ? "🔼 Fechar todas" : "🔽 Abrir todas";
-}
-
-document.getElementById("toggleAllBtn").addEventListener("click", () => {
-  setAllDetails(!allOpen);
-}, { passive:true });
-
-render();
-</script>
-</body>
-</html>
+      data-capacity="${
