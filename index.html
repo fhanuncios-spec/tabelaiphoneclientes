@@ -28,12 +28,14 @@
       --quality:#b8891f;
       --sena:#ff6a00;
       --br10:#b42318;
+      --upgrade:#6d28d9;
 
       --techDark:#061b3a;
       --mangaDark:#0b0b0f;
       --qualityDark:#2a1f05;
       --senaDark:#3a1800;
       --br10Dark:#3f0f12;
+      --upgradeDark:#24103f;
     }
 
     *{box-sizing:border-box; min-width:0;}
@@ -241,6 +243,7 @@
       border: 1px solid rgba(255,255,255,.14);
       white-space:nowrap;
     }
+    .store-badge.upgrade{ background: var(--upgrade); }
     .store-badge.manga{ background: var(--manga); }
     .store-badge.tech{ background: var(--tech); }
     .store-badge.quality{ background: var(--quality); color:#fff; }
@@ -380,6 +383,11 @@
       min-width:0;
     }
 
+    .card.iphone.upgrade{
+      background: var(--upgradeDark);
+      border-color: rgba(255,255,255,.14);
+      color:#fff;
+    }
     .card.iphone.manga{
       background: var(--mangaDark);
       border-color: rgba(255,255,255,.14);
@@ -406,6 +414,7 @@
       color:#fff;
     }
 
+    .card.store-upgrade.status-seminovo,
     .card.store-tech.status-seminovo,
     .card.store-quality.status-seminovo,
     .card.store-sena.status-seminovo,
@@ -413,6 +422,7 @@
       color:#fff;
     }
 
+    .card.iphone.upgrade .details,
     .card.iphone.manga .details,
     .card.iphone.tech .details,
     .card.quality .details,
@@ -420,6 +430,7 @@
     .card.iphone.br10 .details{
       color: rgba(255,255,255,.72);
     }
+    .card.iphone.upgrade .chip,
     .card.iphone.manga .chip,
     .card.iphone.tech .chip,
     .card.quality .chip,
@@ -429,6 +440,7 @@
       border-color: rgba(255,255,255,.16);
       color: rgba(255,255,255,.85);
     }
+    .card.iphone.upgrade .installment,
     .card.iphone.manga .installment,
     .card.iphone.tech .installment,
     .card.quality .installment,
@@ -436,6 +448,7 @@
     .card.iphone.br10 .installment{
       color: rgba(255,255,255,.78);
     }
+    .card.iphone.upgrade .copy,
     .card.iphone.manga .copy,
     .card.iphone.tech .copy,
     .card.quality .copy,
@@ -445,6 +458,7 @@
       background: rgba(255,255,255,.10);
       color: rgba(255,255,255,.92);
     }
+    .card.iphone.upgrade .copy:hover,
     .card.iphone.manga .copy:hover,
     .card.iphone.tech .copy:hover,
     .card.quality .copy:hover,
@@ -496,6 +510,7 @@
         radial-gradient(circle at 20% 20%, rgba(255,255,255,.9), rgba(245,245,247,.8) 30%, rgba(230,230,235,.9) 100%);
       position:relative;
     }
+    .card.iphone.upgrade .image-wrap,
     .card.iphone.manga .image-wrap,
     .card.iphone.tech .image-wrap,
     .card.quality .image-wrap,
@@ -525,6 +540,7 @@
       color:var(--muted);
       font-weight:700;
     }
+    .card.iphone.upgrade .image-fallback,
     .card.iphone.manga .image-fallback,
     .card.iphone.tech .image-fallback,
     .card.quality .image-fallback,
@@ -548,6 +564,7 @@
       color: var(--text);
       border:1px solid rgba(0,0,0,.06);
     }
+    .card.iphone.upgrade .image-label,
     .card.iphone.manga .image-label,
     .card.iphone.tech .image-label,
     .card.quality .image-label,
@@ -846,6 +863,30 @@ function normalizeMoneyText(text){
   return Number.isFinite(value) ? formatBRL(value) : "";
 }
 
+const RAW_UPGRADES = String.raw`
+UPGRADES
+
+📍 iPhone 12  - (UPGRADE) 64gb preto (bateria 90 a 100) R$ 2.600,00
+
+📍 iPhone 13 - 128gb grade A azul (UPGRADE) (bateria 100) R$ 2.500,00
+
+📍 iPhone 13 Pro Max - (UPGRADE) 128gb preto (bateria 90 a 100) R$ 3.350,00
+
+📍 iPhone 14 - 128gb (UPGRADE) branco (bateria 100) R$ 2.750,00
+
+📍 iPhone 14 - 256gb (UPGRADE) preto (bateria 93) R$ 2.900,00
+
+📍 iPhone 14 Plus - 128gb (UPGRADE) VERMELHO (bateria 88) R$ 2.700,00
+
+📍 iPhone 15 pro Max - 256gb (UPGRADE) AZUL (bateria 86) R$ 4.600,00
+
+📍 iPhone 15 pro Max - 256gb (UPGRADE) BRANCO (bateria 87) R$ 4.700,00
+
+📍 iPhone 16 pro Max - 256 grade (UPGRADE) natural (bateria 91) R$ 5.800,00
+
+📍 iPhone 16 pro Max - 256 grade (UPGRADE) DESERT (bateria 89) R$ 5.900,00
+`;
+
 const RAW_MANGA = String.raw`
 IPHONE LACRADOo📦
 
@@ -900,15 +941,11 @@ IPHONE SEMINOVOS📱
 
 Aqui está a sua lista de **IPHONE VITRINE** atualizada para o **Consultório**, com o acréscimo de **R$ 500,00** em todos os valores, remoção dos itens **AB** e formatação de um embaixo do outro:
 
-📍 iPhone 12  - (UPGRADE) 64gb preto (bateria 90 a 100) R$ 2.600,00
-
 📍 iPhone 12 Pro - grade A 256gb azul / gold e preto (bateria 90 a 100) R$ 2.600,00
 
 📍 iPhone 12 Pro Max - grade A 128gb azul (bateria 90 a 100) R$ 3.000,00
 
 📍 iPhone 13 - 128gb grade A branco / preto e rosa (bateria 90 a 💯) R$ 2.500,00
-
-📍 iPhone 13 - 128gb grade A azul (UPGRADE) (bateria 100) R$ 2.500,00
 
 📍 iPhone 13 Pro - grade A 128gb preto / azul e verde (bateria 90 a 100) R$ 2.950,00
 
@@ -916,21 +953,15 @@ Aqui está a sua lista de **IPHONE VITRINE** atualizada para o **Consultório**,
 
 📍 iPhone 13 Pro Max - grade A 128gb preto / silver / gold / azul e verde (bateria 90 a 100) R$ 3.350,00
 
-📍 iPhone 13 Pro Max - (UPGRADE) 128gb preto (bateria 90 a 100) R$ 3.350,00
-
 📍 iPhone 13 Pro Max - grade A 1TERA azul (bateria 90 a 100) R$ 3.600,00
 
 📍 iPhone 14 - 128gb grade A preto / azul e lilás (bateria 90 a 💯) R$ 2.700,00
 
-📍 iPhone 14 - 128gb (UPGRADE) branco (bateria 100) R$ 2.750,00
-
-📍 iPhone 14 - 256gb (UPGRADE) preto (bateria 93) R$ 2.900,00
+📍 iPhone 14 - 128gb grade A branco (bateria 90 a 💯) R$ 2.750,00
 
 📍 iPhone 14 Plus - 128gb grade A preto e lilás (bateria 90 a 💯) R$ 2.800,00
 
-📍 iPhone 14 Plus - 128gb (UPGRADE) VERMELHO (bateria 88) R$ 2.700,00
-
-📍 iPhone 14 pro - 128gb grade A preto e roxo (bateria 90 a 💯) R$ 3.350,00
+📍 iPhone 14 pro - 128gb grade A preto (bateria 90 a 💯) R$ 3.350,00
 
 📍 iPhone 14 pro - 512gb grade A preto (bateria 90 a 💯) R$ 3.500,00
 
@@ -948,22 +979,13 @@ Aqui está a sua lista de **IPHONE VITRINE** atualizada para o **Consultório**,
 
 📍 iPhone 15 pro Max - 256gb grade A branco e natural (bateria 90 a 💯) R$ 4.600,00
 
-📍 iPhone 15 pro Max - 256gb (UPGRADE) AZUL (bateria 86) R$ 4.600,00
-
-📍 iPhone 15 pro Max - 256gb (UPGRADE) BRANCO (bateria 87) R$ 4.700,00
-
-📍 iPhone 16 - 128gb grade A rosa (bateria 89 a 💯) R$ 4.100,00
+📍 iPhone 16 - 128gb grade A rosa e branco (bateria 89 a 💯) R$ 4.100,00
 
 📍 iPhone 16 pro - 128 grade A desert e preto (garantia Apple bateria 90 a 💯) R$ 5.100,00
 
-📍 iPhone 16 pro - 256 grade A desert (bateria 90 a 💯) R$ 5.400,00
+📍 iPhone 16 pro - 256 grade A desert (bateria 90 a 100) R$ 5.400,00
 
-📍 iPhone 16 pro Max - 256 grade A preto (bateria 90 a 💯) R$ 5.800,00
-
-📍 iPhone 16 pro Max - 256 grade (UPGRADE) natural (bateria 91) R$ 5.800,00
-
-📍 iPhone 16 pro Max - 256 grade (UPGRADE) DESERT (bateria 89) R$ 5.900,00
-
+📍 iPhone 16 pro Max - 256 grade A natural e preto (bateria 90 a 💯) R$ 5.800,00
 `;
 
 const RAW_TECH = String.raw`
@@ -1694,9 +1716,6 @@ function cleanHeaderText(line){
     .toUpperCase();
 }
 
-/* CORREÇÃO DO QUALITY:
-   agora detecta cabeçalhos como "IPHONE SEMINOVOS QUALITY"
-   e separa corretamente lacrados de seminovos */
 function isStatusHeader(line){
   const t = cleanHeaderText(line);
   if (!t) return false;
@@ -2611,13 +2630,14 @@ function render(){
   const app = document.getElementById("app");
   app.innerHTML = "";
 
+  const parsedUpgrades = parseList(RAW_UPGRADES, "UPGRADES");
   const parsedManga = parseList(RAW_MANGA, "MANGA");
   const parsedTech = parseList(RAW_TECH, "ImportTech");
   const parsedQuality = parseList(RAW_QUALITY, "QUALITY PREMIUM");
   const parsedSena = parseSenaList(RAW_SENA, "SENA");
   const parsedBr10 = parseBr10List(RAW_BR10, "ATACADO BR10");
 
-  [parsedManga, parsedTech, parsedQuality, parsedSena, parsedBr10].forEach(parsed => {
+  [parsedUpgrades, parsedManga, parsedTech, parsedQuality, parsedSena, parsedBr10].forEach(parsed => {
     for (const status of Object.keys(parsed.data || {})){
       for (const cat of Object.keys(parsed.data[status] || {})){
         parsed.data[status][cat] = parsed.data[status][cat].map(enrichItem);
@@ -2626,6 +2646,7 @@ function render(){
   });
 
   const allItems = [
+    ...flattenParsed(parsedUpgrades),
     ...flattenParsed(parsedManga),
     ...flattenParsed(parsedTech),
     ...flattenParsed(parsedQuality),
@@ -2633,11 +2654,20 @@ function render(){
     ...flattenParsed(parsedBr10)
   ];
 
+  const upgradesWrap = document.createElement("div");
   const mangaWrap = document.createElement("div");
   const techWrap = document.createElement("div");
   const qualityWrap = document.createElement("div");
   const senaWrap = document.createElement("div");
   const br10Wrap = document.createElement("div");
+
+  renderBlock(upgradesWrap, {
+    key:"UPGRADE",
+    title:"UPGRADES",
+    badgeClass:"upgrade",
+    icon:"⬆️",
+    cardTone:"upgrade"
+  }, parsedUpgrades);
 
   renderBlock(mangaWrap, {
     key:"MANGA",
@@ -2679,6 +2709,7 @@ function render(){
     cardTone:"br10"
   }, parsedBr10);
 
+  app.appendChild(upgradesWrap);
   app.appendChild(mangaWrap);
   app.appendChild(techWrap);
   app.appendChild(qualityWrap);
