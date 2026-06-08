@@ -979,31 +979,30 @@
 
 <script>
 const CARD_FEES = {
-  // Taxas do cartão por quantidade de parcelas.
-  // Para editar depois, altere somente os números abaixo.
-  // Exemplo: 0.074588 = 7,4588% embutido no total parcelado.
+  // Taxas do cartão no mesmo dia (D0), sem antecipação automática.
+  // Base usada: coluna Visa/Master da tabela enviada.
+  // Exemplo: 0.0746 = 7,46% embutido no total parcelado.
   credit: {
-    1:  0,
-    2:  0.0299,
-    3:  0.0399,
-    4:  0.0499,
-    5:  0.0599,
-    6:  0.07458819174532672,
-    7:  0.0799,
-    8:  0.0849,
-    9:  0.0899,
-    10: 0.0961773619012175,
-    11: 0.1030,
-    12: 0.10999424113920742,
-    13: 0.1165,
-    14: 0.1230,
-    15: 0.1295,
-    16: 0.1360,
-    17: 0.1425,
-    18: 0.1490
+    1:  0.0359,
+    2:  0.0473,
+    3:  0.0541,
+    4:  0.0610,
+    5:  0.0678,
+    6:  0.0746,
+    7:  0.0756,
+    8:  0.0825,
+    9:  0.0894,
+    10: 0.0962,
+    11: 0.1031,
+    12: 0.1100,
+    13: 0.1169,
+    14: 0.1238,
+    15: 0.1306,
+    16: 0.1375,
+    17: 0.1444,
+    18: 0.1513
   }
 };
-
 const MODEL_IMAGES = {
   "iPhone 11": [
     "assets/img/iphone-11-oficial.jpeg",
