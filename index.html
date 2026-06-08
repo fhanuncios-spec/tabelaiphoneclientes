@@ -109,6 +109,182 @@
 
     .wrap{max-width:1100px;margin:0 auto;padding:18px 14px 42px;width:100%;}
 
+
+    .calculator{
+      margin-bottom:16px;
+      border:1px solid var(--stroke);
+      border-radius:22px;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+    .calculator-head{
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      border-bottom:1px solid var(--stroke);
+      background: linear-gradient(90deg, rgba(10,132,255,.10), rgba(88,86,214,.10));
+    }
+    .calculator-head h2{
+      margin:0;
+      font-size:15px;
+      letter-spacing:-.2px;
+    }
+    .calculator-head small{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+    }
+    .calculator-grid{
+      padding:14px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+    .calc-field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .calc-field label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .calc-field input{
+      width:100%;
+      border:1px solid var(--stroke);
+      background:#fff;
+      color:var(--text);
+      font-size:14px;
+      padding:12px 13px;
+      border-radius:14px;
+      outline:none;
+      box-shadow: 0 4px 14px rgba(0,0,0,.04);
+    }
+    .calc-summary{
+      padding:0 14px 14px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+    .calc-box{
+      border:1px solid var(--stroke);
+      background:#fff;
+      border-radius:16px;
+      padding:12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.04);
+    }
+    .calc-box span{
+      display:block;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:800;
+      margin-bottom:4px;
+    }
+    .calc-box strong{
+      display:block;
+      font-size:15px;
+      letter-spacing:-.2px;
+    }
+    .calculator-installments{
+      padding:0 14px 14px;
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap:8px;
+    }
+    .calc-installment-card,
+    .payment-chip{
+      border:1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.82);
+      border-radius:12px;
+      padding:9px 10px;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .calc-installment-card b,
+    .payment-chip b{
+      font-size:12px;
+      line-height:1.1;
+    }
+    .calc-installment-card small,
+    .payment-chip small{
+      font-size:10.5px;
+      color:var(--muted);
+      line-height:1.2;
+    }
+    .calculator-body{display:none;}
+    .calculator.open .calculator-body{display:block;}
+    .calc-toggle-icon{font-weight:900;}
+    .card-panel{
+      width:100%;
+      display:none;
+      margin-top:2px;
+      border-top:1px solid rgba(0,0,0,.07);
+      padding-top:10px;
+    }
+    .card-panel.show{display:block;}
+    .mini-calc{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:8px;
+      width:100%;
+    }
+    .mini-calc .calc-field{gap:5px;}
+    .mini-calc .calc-field input{padding:10px 11px;font-size:13px;}
+    .mini-calc .calc-field.full{grid-column:1 / -1;}
+    .mini-installments{
+      grid-column:1 / -1;
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+      gap:6px;
+      margin-top:2px;
+    }
+    .card.iphone.upgrade .card-panel,
+    .card.iphone.manga .card-panel,
+    .card.iphone.tech .card-panel,
+    .card.quality .card-panel,
+    .card.iphone.sena .card-panel,
+    .card.iphone.br10 .card-panel{
+      border-top-color: rgba(255,255,255,.14);
+    }
+    .card.iphone.upgrade .mini-calc .calc-field label,
+    .card.iphone.manga .mini-calc .calc-field label,
+    .card.iphone.tech .mini-calc .calc-field label,
+    .card.quality .mini-calc .calc-field label,
+    .card.iphone.sena .mini-calc .calc-field label,
+    .card.iphone.br10 .mini-calc .calc-field label{
+      color: rgba(255,255,255,.78);
+    }
+    .payments-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+      gap:6px;
+      width:100%;
+    }
+    .card.iphone.upgrade .payment-chip,
+    .card.iphone.manga .payment-chip,
+    .card.iphone.tech .payment-chip,
+    .card.quality .payment-chip,
+    .card.iphone.sena .payment-chip,
+    .card.iphone.br10 .payment-chip{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.16);
+      color:#fff;
+    }
+    .card.iphone.upgrade .payment-chip small,
+    .card.iphone.manga .payment-chip small,
+    .card.iphone.tech .payment-chip small,
+    .card.quality .payment-chip small,
+    .card.iphone.sena .payment-chip small,
+    .card.iphone.br10 .payment-chip small{
+      color: rgba(255,255,255,.70);
+    }
+
     .filters{
       margin-bottom:16px;
       border:1px solid var(--stroke);
@@ -357,6 +533,10 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
     @media (max-width:700px){
+      .calculator-grid,
+      .calc-summary{
+        grid-template-columns: 1fr;
+      }
       .filters-grid{
         grid-template-columns: repeat(2, minmax(0,1fr));
       }
@@ -683,7 +863,7 @@
   <div class="header-inner">
     <div class="title">
       <h1>Tabela Consultório do iPhone</h1>
-      <small>Valores à vista. Parcelado em até 18x: consultar.</small>
+      <small>Valores à vista e simulação de parcelamento de 1x a 18x.</small>
     </div>
 
     <div class="head-actions">
@@ -694,6 +874,41 @@
 </header>
 
 <div class="wrap">
+  <section class="calculator" id="topCalculator">
+    <div class="calculator-head">
+      <div>
+        <h2>Calculadora de entrada e parcelamento</h2>
+        <small>Digite o valor do aparelho e a entrada para calcular o restante de 1x a 18x.</small>
+      </div>
+      <button class="toggleAll" id="toggleTopCalcBtn" type="button">🧮 Abrir calculadora</button>
+    </div>
+
+    <div class="calculator-body" id="topCalculatorBody">
+    <div class="calculator-grid">
+      <div class="calc-field">
+        <label for="calcTotal">Valor do aparelho</label>
+        <input id="calcTotal" type="text" inputmode="numeric" placeholder="Ex: 3300" />
+      </div>
+      <div class="calc-field">
+        <label for="calcEntry">Entrada à vista</label>
+        <input id="calcEntry" type="text" inputmode="numeric" placeholder="Ex: 1000" />
+      </div>
+      <div class="calc-field">
+        <label for="calcCashRest">Restante à vista</label>
+        <input id="calcCashRest" type="text" readonly placeholder="R$ 0,00" />
+      </div>
+    </div>
+
+    <div class="calc-summary">
+      <div class="calc-box"><span>Valor do aparelho</span><strong id="calcTotalOut">R$ 0,00</strong></div>
+      <div class="calc-box"><span>Entrada</span><strong id="calcEntryOut">R$ 0,00</strong></div>
+      <div class="calc-box"><span>Valor a parcelar</span><strong id="calcRestOut">R$ 0,00</strong></div>
+    </div>
+
+    <div class="calculator-installments" id="calcInstallments"></div>
+    </div>
+  </section>
+
   <section class="filters">
     <div class="filters-head">
       <h2>Filtros de pesquisa</h2>
@@ -764,10 +979,28 @@
 
 <script>
 const CARD_FEES = {
+  // Taxas do cartão por quantidade de parcelas.
+  // Para editar depois, altere somente os números abaixo.
+  // Exemplo: 0.074588 = 7,4588% embutido no total parcelado.
   credit: {
+    1:  0,
+    2:  0.0299,
+    3:  0.0399,
+    4:  0.0499,
+    5:  0.0599,
     6:  0.07458819174532672,
+    7:  0.0799,
+    8:  0.0849,
+    9:  0.0899,
     10: 0.0961773619012175,
-    12: 0.10999424113920742
+    11: 0.1030,
+    12: 0.10999424113920742,
+    13: 0.1165,
+    14: 0.1230,
+    15: 0.1295,
+    16: 0.1360,
+    17: 0.1425,
+    18: 0.1490
   }
 };
 
@@ -852,10 +1085,10 @@ function formatBRL(n){
 }
 function calcInstallmentFromCash(cashValue, n){
   const fee = CARD_FEES.credit?.[n];
-  if (!Number.isFinite(cashValue) || !fee) return null;
-  const total = cashValue / (1 - fee);
+  if (!Number.isFinite(cashValue) || fee === undefined || fee === null) return null;
+  const total = fee === 0 ? cashValue : cashValue / (1 - fee);
   const parcela = total / n;
-  return { parcela: Number(parcela.toFixed(2)) };
+  return { total: Number(total.toFixed(2)), parcela: Number(parcela.toFixed(2)) };
 }
 
 function normalizeMoneyText(text){
@@ -1495,24 +1728,21 @@ APPLE WATCH
 💻 MacBook Air M5 16/512GB (13) SKY Blue / preto / starlight R$ 7.600,00
 `;
 
-function installmentsLine(i6, i10, i12){
-  const parts = [];
-  if (i6) parts.push(`6x de ${i6}`);
-  if (i10) parts.push(`10x de ${i10}`);
-  if (i12) parts.push(`12x de ${i12}`);
-  return parts.length ? ` • ou ${parts.join(" • ")}` : "";
+function installmentsLine(parcelas){
+  if (!parcelas || !parcelas.length) return "";
+  return ` • ou ${parcelas.map(p => `${p.n}x de ${p.parcela}`).join(" • ")}`;
 }
 
-const TEMPLATE_LACRADO = (model, price, i6, i10, i12, colorsTxt) => `Eu tenho o ${model} lacrado, com garantia oficial Apple! 📦
-está saindo por ${price}${installmentsLine(i6,i10,i12)}.
+const TEMPLATE_LACRADO = (model, price, parcelas, colorsTxt) => `Eu tenho o ${model} lacrado, com garantia oficial Apple! 📦
+está saindo por ${price}${installmentsLine(parcelas)}.
 
 ${colorsTxt ? `🎨 Cores disponíveis: ${colorsTxt}\n\n` : ""}📦 Ele é:
 ✅ Totalmente novo, lacrado na caixa original
 ✅ Produto 100% original e com nota fiscal no seu nome
 ✅ Vai completo com cabo, manual e tudo certinho da Apple`;
 
-const TEMPLATE_SEMINOVO = (model, price, i6, i10, i12, colorsTxt) => `Eu tenho o ${model} seminovo, em perfeito estado! 📦
-está saindo por ${price}${installmentsLine(i6,i10,i12)}.
+const TEMPLATE_SEMINOVO = (model, price, parcelas, colorsTxt) => `Eu tenho o ${model} seminovo, em perfeito estado! 📦
+está saindo por ${price}${installmentsLine(parcelas)}.
 
 ${colorsTxt ? `🎨 Cores disponíveis: ${colorsTxt}\n\n` : ""}📦 Seminovos:
 ✅ 6 meses de garantia pela loja
@@ -1520,8 +1750,8 @@ ${colorsTxt ? `🎨 Cores disponíveis: ${colorsTxt}\n\n` : ""}📦 Seminovos:
 ✅ Capa + Película + Carregador completo de brinde
 ✅ Aparelho 100% original*, super conservado e testado pela nossa equipe técnica`;
 
-const TEMPLATE_GENERIC = (model, price, i6, i10, i12, colorsTxt) => `Eu tenho o ${model} disponível! 📦
-está saindo por ${price}${installmentsLine(i6,i10,i12)}.
+const TEMPLATE_GENERIC = (model, price, parcelas, colorsTxt) => `Eu tenho o ${model} disponível! 📦
+está saindo por ${price}${installmentsLine(parcelas)}.
 
 ${colorsTxt ? `🎨 Variações disponíveis: ${colorsTxt}\n\n` : ""}✅ Produto original
 ✅ Nota fiscal no seu nome
@@ -2068,24 +2298,44 @@ function installmentOnly(item, n){
   return formatBRL(calc.parcela);
 }
 
+function installmentOptionsFromValue(cashValue){
+  const out = [];
+  for (let n = 1; n <= 18; n++){
+    const calc = calcInstallmentFromCash(cashValue, n);
+    if (!calc) continue;
+    out.push({
+      n,
+      parcela: formatBRL(calc.parcela),
+      total: formatBRL(calc.total),
+      parcelaNumber: calc.parcela,
+      totalNumber: calc.total
+    });
+  }
+  return out;
+}
+
+function installmentOptions(item){
+  const cash = parseBRL(item.price);
+  if (!Number.isFinite(cash)) return [];
+  return installmentOptionsFromValue(cash);
+}
+
 function buildMessage(item){
   const model = modelForMessage(item);
   const price = item.price || "R$ (consultar)";
   const colorsTxt = colorsTextForMessage(item);
 
-  const i6 = installmentOnly(item, 6);
-  const i10 = installmentOnly(item, 10);
-  const i12 = installmentOnly(item, 12);
+  const parcelas = installmentOptions(item);
 
   const genericCats = ["macbooks","apple watch","airpods","ipads","relógios"];
   if (genericCats.includes((item.category || "").toLowerCase())) {
-    return TEMPLATE_GENERIC(model, price, i6, i10, i12, colorsTxt);
+    return TEMPLATE_GENERIC(model, price, parcelas, colorsTxt);
   }
 
   if (item.status === "SEMINOVOS" || item.status === "UPGRADE") {
-    return TEMPLATE_SEMINOVO(model, price, i6, i10, i12, colorsTxt);
+    return TEMPLATE_SEMINOVO(model, price, parcelas, colorsTxt);
   }
-  return TEMPLATE_LACRADO(model, price, i6, i10, i12, colorsTxt);
+  return TEMPLATE_LACRADO(model, price, parcelas, colorsTxt);
 }
 
 function escapeHtml(str){
@@ -2156,9 +2406,13 @@ function cardHtml(it, key, cfg){
   const upgradeBadge = it.isUpgrade ? `<div class="badge upgrade">UPGRADE</div>` : "";
   const extraDetails = [it.details].filter(Boolean).join(" • ");
 
-  const i6 = installmentOnly(it, 6);
-  const i10 = installmentOnly(it, 10);
-  const i12 = installmentOnly(it, 12);
+  const parcelas = installmentOptions(it);
+  const parcelasHtml = parcelas.map(p => `
+    <div class="payment-chip">
+      <b>${p.n}x ${escapeHtml(p.parcela)}</b>
+      <small>Total: ${escapeHtml(p.total)}</small>
+    </div>
+  `).join("");
 
   const isQuality = cfg.key === "QUALITY";
   const isIphoneCat = (it.category || "").toLowerCase() === "iphone";
@@ -2207,11 +2461,29 @@ function cardHtml(it, key, cfg){
       <div class="price-row">
         <div class="price">
           <span>${escapeHtml(it.price || "Consultar")}</span>
-          ${i6 ? `<span class="installment">6x ${escapeHtml(i6)}</span>` : ""}
-          ${i10 ? `<span class="installment">10x ${escapeHtml(i10)}</span>` : ""}
-          ${i12 ? `<span class="installment">12x ${escapeHtml(i12)}</span>` : ""}
+          <span class="installment">à vista</span>
+        </div>
+        ${parcelasHtml ? `<div class="card-panel payments-panel"><div class="payments-grid">${parcelasHtml}</div></div>` : ""}
+        <div class="card-panel simulation-panel">
+          <div class="mini-calc" data-mini-calc="1" data-cash="${escapeHtml(String(it._priceNumber || ""))}">
+            <div class="calc-field">
+              <label>Valor do aparelho</label>
+              <input type="text" value="${escapeHtml(it.price || "Consultar")}" readonly />
+            </div>
+            <div class="calc-field">
+              <label>Entrada à vista</label>
+              <input class="mini-entry" type="text" inputmode="numeric" placeholder="Ex: 1000" />
+            </div>
+            <div class="calc-field full">
+              <label>Restante à vista</label>
+              <input class="mini-rest" type="text" readonly placeholder="R$ 0,00" />
+            </div>
+            <div class="mini-installments"></div>
+          </div>
         </div>
         <div class="actions">
+          <button class="copy" type="button" data-toggle-payments="1">💳 Ver parcelas</button>
+          <button class="copy" type="button" data-toggle-simulation="1">🧮 Simular entrada</button>
           <button class="copy" type="button" data-key="${escapeHtml(key)}">📋 Copiar texto</button>
           <button class="copy" type="button" data-image-key="${escapeHtml(key)}">🖼️ Copiar imagem</button>
         </div>
@@ -2564,6 +2836,127 @@ document.getElementById("toggleAllBtn").addEventListener("click", () => {
   setAllDetails(!allOpen);
 }, { passive:true });
 
+
+function updateTopCalculator(){
+  const totalInput = document.getElementById("calcTotal");
+  const entryInput = document.getElementById("calcEntry");
+  const cashRestInput = document.getElementById("calcCashRest");
+  const outTotal = document.getElementById("calcTotalOut");
+  const outEntry = document.getElementById("calcEntryOut");
+  const outRest = document.getElementById("calcRestOut");
+  const list = document.getElementById("calcInstallments");
+  if (!totalInput || !entryInput || !list) return;
+
+  const total = parseBRL(totalInput.value);
+  const entryRaw = parseBRL(entryInput.value);
+  const entry = Number.isFinite(entryRaw) ? Math.max(0, entryRaw) : 0;
+  const value = Number.isFinite(total) ? Math.max(0, total) : 0;
+  const rest = Math.max(0, value - entry);
+
+  cashRestInput.value = formatBRL(rest);
+  outTotal.textContent = formatBRL(value);
+  outEntry.textContent = formatBRL(Math.min(entry, value));
+  outRest.textContent = formatBRL(rest);
+
+  const parcelas = installmentOptionsFromValue(rest);
+  list.innerHTML = parcelas.map(p => `
+    <div class="calc-installment-card">
+      <b>${p.n}x de ${p.parcela}</b>
+      <small>Total parcelado: ${p.total}</small>
+    </div>
+  `).join("");
+}
+
+function bindTopCalculator(){
+  ["calcTotal", "calcEntry"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", updateTopCalculator);
+    el.addEventListener("blur", () => {
+      const n = parseBRL(el.value);
+      if (Number.isFinite(n)) el.value = formatBRL(n);
+      updateTopCalculator();
+    });
+  });
+  updateTopCalculator();
+}
+
+function bindToggleTopCalculator(){
+  const section = document.getElementById("topCalculator");
+  const btn = document.getElementById("toggleTopCalcBtn");
+  if (!section || !btn) return;
+  btn.addEventListener("click", () => {
+    const open = section.classList.toggle("open");
+    btn.textContent = open ? "🧮 Fechar calculadora" : "🧮 Abrir calculadora";
+  });
+}
+
+function renderMiniSimulation(calcBox){
+  if (!calcBox) return;
+  const cash = Number(calcBox.dataset.cash || 0);
+  const entryInput = calcBox.querySelector(".mini-entry");
+  const restInput = calcBox.querySelector(".mini-rest");
+  const list = calcBox.querySelector(".mini-installments");
+  const entryRaw = parseBRL(entryInput?.value || "");
+  const entry = Number.isFinite(entryRaw) ? Math.max(0, entryRaw) : 0;
+  const rest = Math.max(0, cash - entry);
+  if (restInput) restInput.value = formatBRL(rest);
+  if (list){
+    const parcelas = installmentOptionsFromValue(rest);
+    list.innerHTML = parcelas.map(p => `
+      <div class="payment-chip">
+        <b>${p.n}x ${escapeHtml(p.parcela)}</b>
+        <small>Total: ${escapeHtml(p.total)}</small>
+      </div>
+    `).join("");
+  }
+}
+
+function bindCardPanels(){
+  document.addEventListener("click", (ev) => {
+    const paymentsBtn = ev.target.closest("[data-toggle-payments]");
+    if (paymentsBtn){
+      const card = paymentsBtn.closest(".card");
+      const panel = card?.querySelector(".payments-panel");
+      if (panel){
+        const open = panel.classList.toggle("show");
+        paymentsBtn.textContent = open ? "💳 Ocultar parcelas" : "💳 Ver parcelas";
+      }
+      return;
+    }
+
+    const simBtn = ev.target.closest("[data-toggle-simulation]");
+    if (simBtn){
+      const card = simBtn.closest(".card");
+      const panel = card?.querySelector(".simulation-panel");
+      const calcBox = panel?.querySelector("[data-mini-calc]");
+      if (panel){
+        const open = panel.classList.toggle("show");
+        simBtn.textContent = open ? "🧮 Ocultar simulação" : "🧮 Simular entrada";
+        if (open) renderMiniSimulation(calcBox);
+      }
+      return;
+    }
+  });
+
+  document.addEventListener("input", (ev) => {
+    const input = ev.target.closest(".mini-entry");
+    if (!input) return;
+    renderMiniSimulation(input.closest("[data-mini-calc]"));
+  });
+
+  document.addEventListener("blur", (ev) => {
+    const input = ev.target.closest(".mini-entry");
+    if (!input) return;
+    const n = parseBRL(input.value);
+    if (Number.isFinite(n)) input.value = formatBRL(n);
+    renderMiniSimulation(input.closest("[data-mini-calc]"));
+  }, true);
+}
+
+bindTopCalculator();
+bindToggleTopCalculator();
+bindCardPanels();
 render();
 </script>
 </body>
