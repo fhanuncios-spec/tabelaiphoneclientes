@@ -838,6 +838,125 @@
     }
     .empty-state.show{display:block}
 
+
+    .order-modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.48);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:2000;
+    }
+    .order-modal-overlay.show{display:flex;}
+    .order-modal{
+      width:min(560px, 100%);
+      max-height:92vh;
+      overflow:auto;
+      background:#fff;
+      color:var(--text);
+      border-radius:22px;
+      border:1px solid var(--stroke);
+      box-shadow:0 24px 80px rgba(0,0,0,.30);
+    }
+    .order-modal-head{
+      padding:14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid var(--stroke);
+      background:linear-gradient(90deg, rgba(52,199,89,.12), rgba(10,132,255,.10));
+    }
+    .order-modal-head h2{
+      margin:0;
+      font-size:16px;
+      letter-spacing:-.2px;
+    }
+    .order-modal-head small{
+      display:block;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+    }
+    .order-close{
+      appearance:none;
+      border:1px solid var(--stroke);
+      background:#fff;
+      border-radius:999px;
+      width:36px;
+      height:36px;
+      cursor:pointer;
+      font-weight:900;
+      color:var(--text);
+    }
+    .order-grid{
+      padding:14px;
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+    }
+    .order-field{display:flex;flex-direction:column;gap:6px;}
+    .order-field.full{grid-column:1 / -1;}
+    .order-field label{font-size:12px;color:var(--muted);font-weight:850;}
+    .order-field input,
+    .order-field select{
+      width:100%;
+      border:1px solid var(--stroke);
+      background:#fff;
+      color:var(--text);
+      font-size:14px;
+      padding:11px 12px;
+      border-radius:14px;
+      outline:none;
+      box-shadow:0 4px 14px rgba(0,0,0,.04);
+    }
+    .order-upgrade-fields{
+      grid-column:1 / -1;
+      display:none;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+      padding:10px;
+      border:1px solid rgba(109,40,217,.16);
+      border-radius:16px;
+      background:rgba(109,40,217,.06);
+    }
+    .order-upgrade-fields.show{display:grid;}
+    .order-preview{
+      margin:0 14px 14px;
+      border:1px dashed var(--stroke);
+      background:#fafafa;
+      border-radius:16px;
+      padding:12px;
+      white-space:pre-wrap;
+      font-size:13px;
+      line-height:1.35;
+      color:rgba(29,29,31,.86);
+    }
+    .order-actions{
+      padding:0 14px 14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .order-primary{
+      appearance:none;
+      border:1px solid rgba(52,199,89,.35);
+      background:rgba(52,199,89,.14);
+      color:#0b6b2b;
+      font-weight:950;
+      font-size:13px;
+      padding:11px 14px;
+      border-radius:12px;
+      cursor:pointer;
+    }
+    @media (max-width:560px){
+      .order-grid, .order-upgrade-fields{grid-template-columns:1fr;}
+    }
+
     .toast{
       position: fixed;
       left: 50%;
@@ -973,6 +1092,100 @@
 
   <div id="app"></div>
   <div class="empty-state" id="emptyState">Nenhum item encontrado com os filtros selecionados.</div>
+</div>
+
+<div class="order-modal-overlay" id="orderModalOverlay" aria-hidden="true">
+  <div class="order-modal" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
+    <div class="order-modal-head">
+      <div>
+        <h2 id="orderModalTitle">Gerar pedido confirmado</h2>
+        <small>Preencha só o necessário e copie a confirmação para o WhatsApp.</small>
+      </div>
+      <button class="order-close" id="orderCloseBtn" type="button">×</button>
+    </div>
+
+    <div class="order-grid">
+      <div class="order-field full">
+        <label for="orderClient">Cliente</label>
+        <input id="orderClient" type="text" placeholder="Nome do cliente" />
+      </div>
+
+      <div class="order-field full">
+        <label for="orderDevice">Aparelho escolhido</label>
+        <input id="orderDevice" type="text" />
+      </div>
+
+      <div class="order-field">
+        <label for="orderColor">Cor</label>
+        <input id="orderColor" type="text" placeholder="Ex: Silver" />
+      </div>
+
+      <div class="order-field">
+        <label for="orderCapacity">Armazenamento</label>
+        <input id="orderCapacity" type="text" placeholder="Ex: 256GB" />
+      </div>
+
+      <div class="order-field">
+        <label for="orderPrice">Valor do aparelho</label>
+        <input id="orderPrice" type="text" inputmode="numeric" />
+      </div>
+
+      <div class="order-field">
+        <label for="orderEntry">Entrada em dinheiro/Pix</label>
+        <input id="orderEntry" type="text" inputmode="numeric" placeholder="R$ 0,00" />
+      </div>
+
+      <div class="order-field">
+        <label for="orderPayment">Pagamento</label>
+        <select id="orderPayment">
+          <option value="À vista">À vista</option>
+          <option value="Pix">Pix</option>
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Cartão">Cartão</option>
+          <option value="Upgrade + Pix">Upgrade + Pix</option>
+          <option value="Upgrade + Cartão">Upgrade + Cartão</option>
+        </select>
+      </div>
+
+      <div class="order-field">
+        <label for="orderInstallments">Parcelamento</label>
+        <select id="orderInstallments">
+          <option value="">Sem parcelas</option>
+        </select>
+      </div>
+
+      <div class="order-field">
+        <label for="orderHasUpgrade">Tem upgrade?</label>
+        <select id="orderHasUpgrade">
+          <option value="nao">Não</option>
+          <option value="sim">Sim</option>
+        </select>
+      </div>
+
+      <div class="order-field">
+        <label for="orderDifference">Diferença final</label>
+        <input id="orderDifference" type="text" readonly />
+      </div>
+
+      <div class="order-upgrade-fields" id="orderUpgradeFields">
+        <div class="order-field">
+          <label for="orderUpgradeDevice">Aparelho recebido</label>
+          <input id="orderUpgradeDevice" type="text" placeholder="Ex: iPhone 16 Pro Max 256GB" />
+        </div>
+        <div class="order-field">
+          <label for="orderUpgradeValue">Valor da avaliação</label>
+          <input id="orderUpgradeValue" type="text" inputmode="numeric" placeholder="R$ 0,00" />
+        </div>
+      </div>
+    </div>
+
+    <div class="order-preview" id="orderPreview"></div>
+
+    <div class="order-actions">
+      <button class="btn-clean" id="orderCancelBtn" type="button">Cancelar</button>
+      <button class="order-primary" id="orderCopyBtn" type="button">✅ Copiar pedido</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast">Mensagem copiada ✅</div>
@@ -2533,6 +2746,7 @@ function cardHtml(it, key, cfg){
           <button class="copy" type="button" data-toggle-payments="1">💳 Ver parcelas</button>
           <button class="copy" type="button" data-toggle-simulation="1">🧮 Simular entrada</button>
           <button class="copy" type="button" data-key="${escapeHtml(key)}">📋 Copiar texto</button>
+          <button class="copy" type="button" data-order-key="${escapeHtml(key)}">✅ Gerar pedido</button>
           <button class="copy" type="button" data-image-key="${escapeHtml(key)}">🖼️ Copiar imagem</button>
         </div>
       </div>
@@ -2631,6 +2845,14 @@ function renderBlock(container, cfg, parsed){
   `;
 
   container.querySelector(".block").addEventListener("click", async (e) => {
+    const orderBtn = e.target.closest("button[data-order-key]");
+    if (orderBtn){
+      const key = orderBtn.getAttribute("data-order-key");
+      const item = index.get(key);
+      if (item) openOrderModal(item);
+      return;
+    }
+
     const textBtn = e.target.closest("button[data-key]");
     if (textBtn){
       const key = textBtn.getAttribute("data-key");
@@ -3002,9 +3224,174 @@ function bindCardPanels(){
   }, true);
 }
 
+
+let CURRENT_ORDER_ITEM = null;
+
+function fillOrderInstallmentOptions(){
+  const select = document.getElementById("orderInstallments");
+  if (!select) return;
+  select.innerHTML = '<option value="">Sem parcelas</option>';
+  for (let n = 1; n <= 18; n++){
+    const opt = document.createElement("option");
+    opt.value = String(n);
+    opt.textContent = `${n}x`;
+    select.appendChild(opt);
+  }
+}
+
+function getOrderValues(){
+  const price = parseBRL(document.getElementById("orderPrice")?.value || "") || 0;
+  const entry = parseBRL(document.getElementById("orderEntry")?.value || "") || 0;
+  const hasUpgrade = document.getElementById("orderHasUpgrade")?.value === "sim";
+  const upgradeValue = hasUpgrade ? (parseBRL(document.getElementById("orderUpgradeValue")?.value || "") || 0) : 0;
+  const difference = Math.max(0, price - entry - upgradeValue);
+  const installments = Number(document.getElementById("orderInstallments")?.value || 0);
+  const installmentCalc = installments ? calcInstallmentFromCash(difference, installments) : null;
+  return { price, entry, hasUpgrade, upgradeValue, difference, installments, installmentCalc };
+}
+
+function orderLineParts(parts){
+  return parts.map(p => String(p || "").trim()).filter(Boolean).join(" • ");
+}
+
+function buildOrderMessage(){
+  const client = document.getElementById("orderClient")?.value.trim() || "-";
+  const device = document.getElementById("orderDevice")?.value.trim() || "-";
+  const color = document.getElementById("orderColor")?.value.trim() || "-";
+  const capacity = document.getElementById("orderCapacity")?.value.trim() || "";
+  const payment = document.getElementById("orderPayment")?.value || "-";
+  const upgradeDevice = document.getElementById("orderUpgradeDevice")?.value.trim() || "-";
+  const v = getOrderValues();
+
+  const paymentLine = v.installments && v.installmentCalc
+    ? `${payment} • ${v.installments}x de ${formatBRL(v.installmentCalc.parcela)}`
+    : payment;
+
+  const lines = [
+    "PEDIDO CONFIRMADO",
+    "",
+    `Cliente: ${client}`,
+    "",
+    orderLineParts([device, color, capacity]),
+    "",
+    `Valor: ${formatBRL(v.price)}`,
+  ];
+
+  if (v.entry > 0) lines.push(`Entrada: ${formatBRL(v.entry)}`);
+  if (v.hasUpgrade) lines.push(`Upgrade: ${upgradeDevice} (${formatBRL(v.upgradeValue)})`);
+
+  lines.push(
+    "",
+    `Pagamento: ${paymentLine}`,
+    "",
+    `Diferença final: ${formatBRL(v.difference)}`,
+    "",
+    "Cliente ciente e de acordo."
+  );
+
+  return lines.join("\n");
+}
+
+function updateOrderPreview(){
+  const v = getOrderValues();
+  const diffInput = document.getElementById("orderDifference");
+  if (diffInput) diffInput.value = formatBRL(v.difference);
+
+  const upgradeFields = document.getElementById("orderUpgradeFields");
+  if (upgradeFields) upgradeFields.classList.toggle("show", v.hasUpgrade);
+
+  const preview = document.getElementById("orderPreview");
+  if (preview) preview.textContent = buildOrderMessage();
+}
+
+function openOrderModal(item){
+  CURRENT_ORDER_ITEM = item;
+  fillOrderInstallmentOptions();
+
+  const overlay = document.getElementById("orderModalOverlay");
+  const deviceInput = document.getElementById("orderDevice");
+  const colorInput = document.getElementById("orderColor");
+  const capacityInput = document.getElementById("orderCapacity");
+  const priceInput = document.getElementById("orderPrice");
+  const clientInput = document.getElementById("orderClient");
+
+  const colorsTxt = colorsTextForMessage(item);
+  if (clientInput) clientInput.value = "";
+  if (deviceInput) deviceInput.value = modelForMessage(item);
+  if (colorInput) colorInput.value = colorsTxt;
+  if (capacityInput) capacityInput.value = item._capacity || extractCapacity(item.title || item.raw || "");
+  if (priceInput) priceInput.value = item.price || formatBRL(item._priceNumber || 0);
+
+  const entry = document.getElementById("orderEntry");
+  const up = document.getElementById("orderHasUpgrade");
+  const upDevice = document.getElementById("orderUpgradeDevice");
+  const upValue = document.getElementById("orderUpgradeValue");
+  const pay = document.getElementById("orderPayment");
+  const par = document.getElementById("orderInstallments");
+  if (entry) entry.value = "";
+  if (up) up.value = "nao";
+  if (upDevice) upDevice.value = "";
+  if (upValue) upValue.value = "";
+  if (pay) pay.value = "Cartão";
+  if (par) par.value = "";
+
+  updateOrderPreview();
+  if (overlay){
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden", "false");
+  }
+  setTimeout(() => clientInput?.focus(), 80);
+}
+
+function closeOrderModal(){
+  const overlay = document.getElementById("orderModalOverlay");
+  if (overlay){
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+}
+
+function bindOrderModal(){
+  const overlay = document.getElementById("orderModalOverlay");
+  const ids = [
+    "orderClient", "orderDevice", "orderColor", "orderCapacity", "orderPrice",
+    "orderEntry", "orderPayment", "orderInstallments", "orderHasUpgrade",
+    "orderUpgradeDevice", "orderUpgradeValue"
+  ];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", updateOrderPreview);
+    el.addEventListener("change", updateOrderPreview);
+    el.addEventListener("blur", () => {
+      if (["orderPrice", "orderEntry", "orderUpgradeValue"].includes(id)){
+        const n = parseBRL(el.value);
+        if (Number.isFinite(n)) el.value = formatBRL(n);
+        updateOrderPreview();
+      }
+    });
+  });
+
+  document.getElementById("orderCloseBtn")?.addEventListener("click", closeOrderModal);
+  document.getElementById("orderCancelBtn")?.addEventListener("click", closeOrderModal);
+  document.getElementById("orderCopyBtn")?.addEventListener("click", async () => {
+    await copyText(buildOrderMessage());
+    closeOrderModal();
+  });
+
+  overlay?.addEventListener("click", (ev) => {
+    if (ev.target === overlay) closeOrderModal();
+  });
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape") closeOrderModal();
+  });
+}
+
 bindTopCalculator();
 bindToggleTopCalculator();
 bindCardPanels();
+bindOrderModal();
 render();
 </script>
 </body>
