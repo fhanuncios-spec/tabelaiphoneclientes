@@ -3223,15 +3223,15 @@ function parseAnilList(rawText,sourceName){
   }
 
   function isProductTitle(line){
-    return /^(📍|🔥|🎧|🖊️?)\s*/u.test(line)
-      && !/R\$\s*[\d.]+(?:,\d{2})?/i.test(line);
-  }
+  return /^(📍|📲|📱|🔥|🎧|🖊️?)\s*/u.test(line)
+    && !/R\$\s*[\d.]+(?:,\d{2})?/i.test(line);
+}
 
-  function cleanProductTitle(line){
-    return line
-      .replace(/^(📍|🔥|🎧|🖊️?)\s*/u,"")
-      .trim();
-  }
+function cleanProductTitle(line){
+  return line
+    .replace(/^(📍|📲|📱|🔥|🎧|🖊️?)\s*/u,"")
+    .trim();
+}
 
   function pushVariant(variantLine){
     if(!currentProduct) return;
