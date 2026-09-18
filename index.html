@@ -3082,12 +3082,12 @@ function createItemFromChunk(chunk,source,status,category){
   return item;
 }
 
-function parseList(rawText,sourceName){
+function parseList(rawText,sourceName,initialStatus = DEFAULT_STATUS){
   const lines = rawText.split("\n").map(normalizeLine);
 
   const data = {};
 
-  let status = DEFAULT_STATUS;
+  let status = initialStatus;
   let category = "iPhone";
 
   for(let i = 0; i < lines.length; i++){
@@ -5256,9 +5256,10 @@ function render(){
   );
 
   const parsedTech = parseList(
-    RAW_TECH,
-    "ImportTech"
-  );
+  RAW_TECH,
+  "ImportTech",
+  "SEMINOVOS"
+);
 
   const parsedQuality = parseList(
     RAW_QUALITY,
