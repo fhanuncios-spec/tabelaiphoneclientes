@@ -1778,6 +1778,22 @@ const MODEL_IMAGES = {
   "iPhone 17 Pro":"assets/img/iphone-17-pro-oficial.jpg",
   "iPhone 17 Pro Max":"assets/img/17promaxcores.jpg",
 
+  "iPhone 18 Pro":[
+    "assets/img/iphone-18-pro-oficial.png",
+    "assets/img/iphone-18-pro-oficial.jpg",
+    createPhoneIllustration("iPhone 18 Pro",["#64152d","#17181c","#24537b","#d8d9dc"])
+  ],
+  "iPhone 18 Pro Max":[
+    "assets/img/iphone-18-pro-max-oficial.png",
+    "assets/img/iphone-18-pro-max-oficial.jpg",
+    createPhoneIllustration("iPhone 18 Pro Max",["#64152d","#17181c","#24537b","#d8d9dc"])
+  ],
+  "iPhone Duo":[
+    "assets/img/iphone-duo-oficial.png",
+    "assets/img/iphone-duo-oficial.jpg",
+    createPhoneIllustration("iPhone Duo",["#f1f2f4","#3977aa"],true)
+  ],
+
   "Apple Watch Series 2":"assets/img/applewatch-se2-oficial.jpeg",
   "Apple Watch SE 2":"assets/img/applewatch-se2-oficial.jpeg",
   "Apple Watch Series 3":"assets/img/applewatch-se3-oficial.jpeg",
@@ -1826,6 +1842,53 @@ const MODEL_IMAGES = {
 };
 
 const FALLBACK_IMAGE = "assets/img/sem-imagem.png";
+
+function createPhoneIllustration(title,colors,isDuo = false){
+  const palette = colors?.length ? colors : ["#1d1d1f"];
+  const phoneWidth = isDuo ? 74 : 58;
+  const gap = isDuo ? 5 : 16;
+  const totalWidth = palette.length * phoneWidth + (palette.length - 1) * gap;
+  const startX = (360 - totalWidth) / 2;
+
+  const devices = palette.map((color,index) => {
+    const x = startX + index * (phoneWidth + gap);
+    const hinge = isDuo
+      ? `<rect x="${x + phoneWidth - 5}" y="62" width="10" height="168" rx="5" fill="#777b82"/>`
+      : "";
+    const secondHalf = isDuo
+      ? `<rect x="${x + phoneWidth}" y="54" width="${phoneWidth}" height="184" rx="15" fill="${color}" stroke="#8b8d92" stroke-width="2"/>`
+      : "";
+
+    return `
+      <g>
+        <rect x="${x}" y="54" width="${phoneWidth}" height="184" rx="15" fill="${color}" stroke="#8b8d92" stroke-width="2"/>
+        ${secondHalf}
+        ${hinge}
+        <rect x="${x + 8}" y="65" width="34" height="43" rx="10" fill="rgba(20,20,22,.58)"/>
+        <circle cx="${x + 18}" cy="77" r="7" fill="#11151c" stroke="#8ea6bd"/>
+        <circle cx="${x + 33}" cy="91" r="7" fill="#11151c" stroke="#8ea6bd"/>
+        <circle cx="${x + 33}" cy="76" r="4" fill="#d7e7f3"/>
+        <path d="M${x + phoneWidth/2 - 5} 212c7-5 15 1 11 10-3 7-9 10-11 10s-8-3-11-10c-4-9 4-15 11-10z" fill="rgba(255,255,255,.48)"/>
+      </g>`;
+  }).join("");
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="360" height="300" viewBox="0 0 360 300">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop stop-color="#ffffff"/><stop offset="1" stop-color="#eef2f7"/>
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+          <feDropShadow dx="0" dy="9" stdDeviation="8" flood-opacity=".18"/>
+        </filter>
+      </defs>
+      <rect width="360" height="300" rx="24" fill="url(#bg)"/>
+      <g filter="url(#shadow)">${devices}</g>
+      <text x="180" y="274" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#1d1d1f">${title}</text>
+    </svg>`;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
 
 /* =====================================================
    UTILIDADES
@@ -2610,6 +2673,7 @@ const EMOJI_COLOR_MAP = new Map([
   ["🧡","dourado"],["💛","amarelo"],["💚","verde"],
   ["⚫","preto"],["⚪","branco"],["🔵","azul"],["🟢","verde"],
   ["🟣","roxo"],["🟠","dourado"],["🟡","amarelo"],["🔴","vermelho"],
+  ["⬛","preto"],["⬜","branco"],["🟦","azul"],["🟪","bordô"],
   ["🌕","natural"]
 ]);
 
@@ -2673,8 +2737,8 @@ function extractColorsFromWords(text){
 
   const colors = [
     "preto","branco","azul","rosa","verde","vermelho","amarelo",
-    "roxo","cinza","grafite","laranja","dourado","lilas","natural",
-    "desert","silver","midnight","starlight","gold","space gray",
+    "roxo","bordô","cinza","grafite","laranja","dourado","lilas","natural",
+    "prata","desert","silver","midnight","starlight","gold","space gray",
     "black","lavanda","rose gold"
   ];
 
@@ -2767,7 +2831,14 @@ function cleanModelOnly(text){
 
   if(
     !upper.includes("IPHONE") &&
-    /^(11|12|13|14|15|16|17)/.test(upper)
+    /^(11|12|13|14|15|16|17|18)\b/.test(upper)
+  ){
+    value = `iPhone ${value}`;
+  }
+
+  if(
+    !upper.includes("IPHONE") &&
+    /^DUO\b/.test(upper)
   ){
     value = `iPhone ${value}`;
   }
@@ -2778,6 +2849,7 @@ function cleanModelOnly(text){
     .replace(/\bPLUS\b/ig,"Plus")
     .replace(/\bMINI\b/ig,"Mini")
     .replace(/\bAIR\b/ig,"Air")
+    .replace(/\bDUO\b/ig,"Duo")
     .replace(/\bMAX\b/ig,"Max")
     .replace(/\bSERIES\b/ig,"Series");
 
@@ -2817,6 +2889,10 @@ function lineGroupFor(item){
   const model = cleanModelOnly(item.title || item.raw);
 
   if(category === "iphone"){
+    if(normalizeText(model).includes("iphone duo")){
+      return "LINHA DUO";
+    }
+
     const match = model.match(/iPhone\s*(1[0-9][A-Z]?)/i);
     return match ? `LINHA ${match[1]}` : "OUTROS";
   }
@@ -3076,14 +3152,22 @@ function parseAnilList(rawText,sourceName){
     return /^━+/.test(line);
   }
 
-  function isProductTitle(line){
-  return /^(📍|📲|📱|🔥|🎧|🖊️?)\s*/u.test(line)
-    && !/R\$\s*[\d.]+(?:,\d{2})?/i.test(line);
+function isProductTitle(line){
+  if(/R\$\s*[\d.]+(?:,\d{2})?/i.test(line)){
+    return false;
+  }
+
+  const cleaned = String(line || "")
+    .replace(/^[^\p{L}\p{N}]+/u,"")
+    .trim();
+
+  return /^(?:iPhone\s*)?(?:11|12|13|14|15|16|17|18)\b|^(?:iPhone\s*)?Duo\b|^(?:iPad|AirPods|Apple\s+Watch|Pencil|MacBook|Mac\s+Mini|AirTag)\b/i.test(cleaned);
 }
 
 function cleanProductTitle(line){
-  return line
-    .replace(/^(📍|📲|📱|🔥|🎧|🖊️?)\s*/u,"")
+  return String(line || "")
+    .replace(/^[^\p{L}\p{N}]+/u,"")
+    .replace(/[^\p{L}\p{N})]+$/u,"")
     .trim();
 }
 
@@ -3322,6 +3406,11 @@ function enrichItem(item){
     model,
     capacity,
     colors.join(" "),
+    colors.some(color =>
+      ["branco","prata","silver"].includes(normalizeText(color))
+    )
+      ? "branco prata silver"
+      : "",
     displayTitle(item),
     normalizeText(model).includes("airpods")
       ? "airpods fone fones acessorio acessórios"
