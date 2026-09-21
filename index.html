@@ -2832,7 +2832,7 @@ function extractCapacity(text){
   const value = String(text || "");
 
   const match = value.match(
-    /\b(40|42|44|46|49|64|128|256|512)\s*(gb|g|mm)\b|\b1\s*tb\b|\b2\s*tb\b|\b1\s*tera\b|\b1\s*t\b/i
+    /\b(40|42|44|46|49|64|128|256|512)\s*(gb|g|mm)\b|\b(64|128|256|512)\s*(?=esim|chip|$)|\b1\s*tb\b|\b2\s*tb\b|\b1\s*tera\b|\b1\s*t\b/i
   );
 
   if(!match) return "";
@@ -2842,7 +2842,8 @@ function extractCapacity(text){
     .replace(/\s+/g,"")
     .replace(/1TERA/i,"1TB")
     .replace(/^1T$/i,"1TB")
-    .replace(/G$/,"GB");
+    .replace(/G$/,"GB")
+    .replace(/^(64|128|256|512)$/,"$1GB");
 }
 
 function capitalizeBrand(text){
@@ -3113,6 +3114,115 @@ function parseList(rawText,sourceName){
       }
     }
   }
+
+  return {data};
+}
+
+function parseQualityList(rawText,sourceName){
+  const lines = rawText.split("\n").map(normalizeLine);
+  const data = {};
+
+  let status = DEFAULT_STATUS;
+  let currentTitle = "";
+  let currentLines = [];
+
+  function isQualityProductTitle(line){
+    const value = stripItemIcon(line)
+      .replace(/^[^\p{L}\p{N}]+/u,"")
+      .trim();
+
+    return /^(?:iPhone\s*)?(?:11|12|13|14|15|16|17|18)(?:e\b|\b)/i.test(value);
+  }
+
+  function addItem(title,detailLines,itemStatus){
+    const chunk = [`📱${stripItemIcon(title)}`,...detailLines];
+    const item = createItemFromChunk(
+      chunk,
+      sourceName,
+      itemStatus,
+      "iPhone"
+    );
+
+    if(!item) return;
+
+    item.category = "iPhone";
+    item.colorsWords = extractColorsFromWords(
+      detailLines.join(" ")
+    );
+    item.colorsEmoji = detailLines.flatMap(
+      extractColorsFromEmojiLine
+    );
+    item.lineGroup = lineGroupFor(item);
+
+    data[item.status] ??= {};
+    data[item.status].iPhone ??= [];
+    data[item.status].iPhone.push(item);
+  }
+
+  function flushProduct(){
+    if(!currentTitle || !currentLines.length){
+      currentTitle = "";
+      currentLines = [];
+      return;
+    }
+
+    const priceIndexes = currentLines
+      .map((line,index) => /R\$\s*[\d.]+(?:,\d{2})?/i.test(line) ? index : -1)
+      .filter(index => index >= 0);
+
+    if(!priceIndexes.length){
+      currentTitle = "";
+      currentLines = [];
+      return;
+    }
+
+    let start = 0;
+
+    priceIndexes.forEach((priceIndex,index) => {
+      const isLastPrice = index === priceIndexes.length - 1;
+      const end = isLastPrice
+        ? currentLines.length
+        : priceIndex + 1;
+
+      addItem(
+        currentTitle,
+        currentLines.slice(start,end),
+        status
+      );
+
+      start = priceIndex + 1;
+    });
+
+    currentTitle = "";
+    currentLines = [];
+  }
+
+  for(const line of lines){
+    if(!line) continue;
+
+    const productTitle = isQualityProductTitle(line);
+    const detectedStatus = productTitle
+      ? null
+      : detectStatus(line);
+
+    if(detectedStatus){
+      flushProduct();
+      status = detectedStatus;
+      continue;
+    }
+
+    if(productTitle){
+      flushProduct();
+      currentTitle = line;
+      continue;
+    }
+
+    if(currentTitle){
+      currentLines.push(line);
+    }
+  }
+
+  flushProduct();
 
   return {data};
 }
@@ -5205,7 +5315,7 @@ function render(){
     "ImportTech"
   );
 
-  const parsedQuality = parseList(
+  const parsedQuality = parseQualityList(
     RAW_QUALITY,
     "QUALITY PREMIUM"
   );
