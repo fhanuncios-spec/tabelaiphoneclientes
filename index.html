@@ -2747,7 +2747,7 @@ const EMOJI_COLOR_MAP = new Map([
   ["⚫","preto"],["⚪","branco"],["🔵","azul"],["🟢","verde"],
   ["🟣","roxo"],["🟠","dourado"],["🟡","amarelo"],["🔴","vermelho"],
   ["⬛","preto"],["⬜","branco"],["🟦","azul"],["🟪","bordô"],
-  ["🌕","natural"]
+  ["🌕","natural"],["🔘","natural"]
 ]);
 
 function cleanHeaderText(line){
@@ -2869,6 +2869,7 @@ function capitalizeBrand(text){
     .replace(/\bIPAD\b/ig,"iPad")
     .replace(/\bAPPLE\b/ig,"Apple")
     .replace(/\bAIRPODS\b/ig,"AirPods")
+    .replace(/\bAIR\s*TAG\b/ig,"AirTag")
     .replace(/\bPENCIL\b/ig,"Pencil")
     .replace(/\bMACBOOK\b/ig,"MacBook")
     .replace(/\s+/g," ")
@@ -2905,7 +2906,7 @@ function cleanModelOnly(text){
 
   if(
     !upper.includes("IPHONE") &&
-    /^(11|12|13|14|15|16|17|18)\b/.test(upper)
+    /^(11|12|13|14|15|16|17|18)(?:E\b|\b)/.test(upper)
   ){
     value = `iPhone ${value}`;
   }
@@ -2973,7 +2974,10 @@ function lineGroupFor(item){
 
   if(normalizeText(model).includes("apple pencil")) return "APPLE PENCIL";
   if(normalizeText(model).includes("airpods")) return "AIRPODS";
-  if(normalizeText(model).includes("airtag")) return "AIRTAG";
+  if(
+    normalizeText(model).includes("airtag") ||
+    normalizeText(model).includes("air tag")
+  ) return "AIRTAG";
   if(category.includes("acessor")) return "ACESSÓRIOS";
   if(category.includes("pencil")) return "APPLE PENCIL";
   if(category.includes("airpods")) return "AIRPODS";
@@ -3309,145 +3313,150 @@ function parseSenaList(rawText,sourceName){
   return {data};
 }
 
-function parseAnilList(rawText,sourceName){
-  const lines = rawText.split("\n").map(normalizeLine);
+function stripCatalogDecoration(line){
+  return String(line || "")
+    .replace(/[\uFE0E\uFE0F]/g,"")
+    .replace(/^[^\p{L}\p{N}]+/u,"")
+    .replace(/[^\p{L}\p{N}"')]+$/u,"")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function catalogSectionCategory(line){
+  if(/R\$/i.test(line)) return "";
+
+  const cleaned = normalizeText(
+    stripCatalogDecoration(line)
+  );
+
+  if(/^(?:linha )?iphones?$/.test(cleaned)) return "iPhone";
+  if(/^ipads?$/.test(cleaned)) return "iPad";
+  if(/^(?:apple )?pencils?$/.test(cleaned)) return "Apple Pencil";
+  if(/^air ?tags?$/.test(cleaned)) return "Acessórios Apple";
+  if(/^airpods?$/.test(cleaned)) return "AirPods";
+  if(/^(?:apple )?watch(?:es)?$/.test(cleaned)) return "Apple Watch";
+  if(/^(?:macbooks?|mac mini)$/.test(cleaned)) return "MacBook";
+  if(/^acessorios?(?: apple)?$/.test(cleaned)) return "Acessórios Apple";
+
+  return "";
+}
+
+function isCatalogProductTitle(line){
+  const cleaned = stripCatalogDecoration(line);
+
+  return /^(?:iPhone\s*)?(?:11|12|13|14|15|16|17|18)(?:e\b|\b)|^(?:iPhone\s*)?(?:Duo|Air)\b|^iPad\b|^(?:Apple\s+)?Pencil\b|^AirPods?\b|^Apple\s+Watch\b|^MacBook\b|^Mac\s+Mini\b|^Air\s*Tag\b/i.test(cleaned);
+}
+
+function cleanCatalogProductTitle(line){
+  const withoutPrice = String(line || "")
+    .replace(/\s*(?:[-—:|])?\s*R\$\s*[\d.]+(?:,\d{2})?.*$/i,"");
+
+  return stripCatalogDecoration(withoutPrice)
+    .replace(/\s*[•·]\s*/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function catalogCategoryForProduct(title,fallback){
+  const normalized = normalizeText(title);
+
+  if(normalized.startsWith("ipad")) return "iPad";
+  if(normalized.includes("pencil")) return "Apple Pencil";
+  if(normalized.includes("airpods")) return "AirPods";
+  if(
+    normalized.includes("airtag") ||
+    normalized.includes("air tag")
+  ) return "Acessórios Apple";
+  if(normalized.includes("apple watch")) return "Apple Watch";
+  if(
+    normalized.includes("macbook") ||
+    normalized.includes("mac mini")
+  ) return "MacBook";
+
+  return fallback || "iPhone";
+}
+
+function parseAtacadaoCatalog(rawText,sourceName,status){
+  const lines = rawText
+    .split("\n")
+    .map(normalizeLine)
+    .filter(Boolean);
 
   const data = {
-    LACRADOS:{}
+    [status]:{}
   };
 
   let category = "iPhone";
   let currentProduct = null;
 
-  function categoryFromHeader(line){
-    const normalized = normalizeText(line);
-
-    if(normalized.includes("iphone")) return "iPhone";
-    if(normalized.includes("ipad")) return "iPad";
-    if(normalized.includes("macbook")) return "MacBook";
-    if(normalized.includes("apple watch")) return "Apple Watch";
-    if(normalized.includes("acessor")) return "Acessórios Apple";
-
-    return "";
-  }
-
-  function isSectionHeader(line){
-    return /^━+/.test(line);
-  }
-
-function isProductTitle(line){
-  if(/R\$\s*[\d.]+(?:,\d{2})?/i.test(line)){
-    return false;
-  }
-
-  const cleaned = String(line || "")
-    .replace(/^[^\p{L}\p{N}]+/u,"")
-    .trim();
-
-  return /^(?:iPhone\s*)?(?:11|12|13|14|15|16|17|18)\b|^(?:iPhone\s*)?Duo\b|^(?:iPad|AirPods|Apple\s+Watch|Pencil|MacBook|Mac\s+Mini|AirTag)\b/i.test(cleaned);
-}
-
-function cleanProductTitle(line){
-  return String(line || "")
-    .replace(/^[^\p{L}\p{N}]+/u,"")
-    .replace(/[^\p{L}\p{N})]+$/u,"")
-    .trim();
-}
-
   function pushVariant(variantLine){
     if(!currentProduct) return;
 
-    const priceMatch = variantLine.match(
+    const priceMatch = String(variantLine).match(
       /R\$\s*[\d.]+(?:,\d{2})?/i
     );
 
     if(!priceMatch) return;
 
-    let variant = variantLine
+    const variant = String(variantLine)
       .replace(priceMatch[0]," ")
+      .replace(/[\uFE0E\uFE0F]/g,"")
       .replace(/^[^\p{L}\p{N}]+/u,"")
-      .replace(/[•·]\s*$/,"")
+      .replace(/[•·—|:]\s*$/u,"")
+      .replace(/\s+/g," ")
       .trim();
+
+    const itemCategory = catalogCategoryForProduct(
+      currentProduct.title,
+      currentProduct.category
+    );
 
     const item = {
       source:sourceName,
-      status:"LACRADOS",
-      category,
+      status,
+      category:itemCategory,
       title:currentProduct.title,
-      raw:[currentProduct.title,variant].filter(Boolean).join(" "),
+      raw:[currentProduct.title,variant]
+        .filter(Boolean)
+        .join(" "),
       details:variant,
       price:normalizeMoneyText(priceMatch[0]),
-      colorsWords:extractColorsFromWords(variant),
+      colorsWords:extractColorsFromWords(variantLine),
       colorsEmoji:extractColorsFromEmojiLine(variantLine),
       isUpgrade:false
     };
 
-    if(normalizeText(item.title).includes("apple pencil")){
-      item.category = "Apple Pencil";
-    }else if(normalizeText(item.title).includes("airpods")){
-      item.category = "AirPods";
-    }else if(normalizeText(item.title).includes("airtag")){
-      item.category = "Acessórios Apple";
-    }
-
     item.lineGroup = lineGroupFor(item);
 
-    data.LACRADOS[item.category] ??= [];
-    data.LACRADOS[item.category].push(item);
+    data[status][item.category] ??= [];
+    data[status][item.category].push(item);
   }
 
-  for(let i = 0; i < lines.length; i++){
-    const line = lines[i];
+  for(const line of lines){
+    const sectionCategory = catalogSectionCategory(line);
 
-    if(!line) continue;
-
-    if(isSectionHeader(line)){
-      const found = categoryFromHeader(line);
-
-      if(found){
-        category = found;
-      }
-
+    if(sectionCategory){
+      category = sectionCategory;
       currentProduct = null;
       continue;
     }
 
-    if(isProductTitle(line)){
+    if(isCatalogProductTitle(line)){
+      const title = cleanCatalogProductTitle(line);
+
       currentProduct = {
-        title:cleanProductTitle(line)
+        title,
+        category:catalogCategoryForProduct(title,category)
       };
 
-      const next = lines[i + 1] || "";
-
-      if(/^💰/u.test(next) && /R\$/i.test(next)){
-        pushVariant(next);
-        i++;
-        currentProduct = null;
+      if(/R\$/i.test(line)){
+        pushVariant(line);
       }
 
       continue;
     }
 
-    if(/^⚪\s*AirTag/i.test(line)){
-      currentProduct = {
-        title:line.replace(/^⚪\s*/u,"").trim()
-      };
-
-      const next = lines[i + 1] || "";
-
-      if(/^💰/u.test(next) && /R\$/i.test(next)){
-        pushVariant(next);
-        i++;
-        currentProduct = null;
-      }
-
-      continue;
-    }
-
-    if(
-      currentProduct &&
-      /R\$\s*[\d.]+(?:,\d{2})?/i.test(line)
-    ){
+    if(currentProduct && /R\$/i.test(line)){
       pushVariant(line);
     }
   }
@@ -3455,72 +3464,20 @@ function cleanProductTitle(line){
   return {data};
 }
 
+function parseAnilList(rawText,sourceName){
+  return parseAtacadaoCatalog(
+    rawText,
+    sourceName,
+    "LACRADOS"
+  );
+}
+
 function parseAtacadaoTaquaraSeminovos(rawText,sourceName){
-  const lines = rawText
-    .split("\n")
-    .map(normalizeLine)
-    .filter(Boolean);
-
-  const data = {
-    SEMINOVOS:{
-      iPhone:[]
-    }
-  };
-
-  for(let i = 0; i < lines.length; i++){
-    const line = lines[i];
-
-    if(!/^📲\s*iPhone/i.test(line)){
-      continue;
-    }
-
-    const title = line
-      .replace(/^📲\s*/u,"")
-      .replace(/\s*[•·]\s*/g," ")
-      .replace(/\s+/g," ")
-      .trim();
-
-    let colorLine = "";
-    let priceLine = "";
-
-    for(let j = i + 1; j < Math.min(lines.length,i + 4); j++){
-      if(/^📲/.test(lines[j])) break;
-
-      if(/R\$/i.test(lines[j])){
-        priceLine = lines[j];
-        break;
-      }
-
-      colorLine += ` ${lines[j]}`;
-    }
-
-    if(!priceLine) continue;
-
-    const priceMatch = priceLine.match(
-      /R\$\s*[\d.]+(?:,\d{2})?/i
-    );
-
-    if(!priceMatch) continue;
-
-    const item = {
-      source:sourceName,
-      status:"SEMINOVOS",
-      category:"iPhone",
-      title,
-      raw:`${title} ${colorLine}`,
-      details:"",
-      price:normalizeMoneyText(priceMatch[0]),
-      colorsWords:extractColorsFromWords(colorLine),
-      colorsEmoji:extractColorsFromEmojiLine(colorLine),
-      isUpgrade:false
-    };
-
-    item.lineGroup = lineGroupFor(item);
-
-    data.SEMINOVOS.iPhone.push(item);
-  }
-
-  return {data};
+  return parseAtacadaoCatalog(
+    rawText,
+    sourceName,
+    "SEMINOVOS"
+  );
 }
 
 /* =====================================================
@@ -5498,6 +5455,3 @@ bindOrderModal();
 render();
 
 </script>
-
-</body>
-</html>
