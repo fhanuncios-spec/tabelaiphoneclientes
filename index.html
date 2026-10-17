@@ -3669,7 +3669,7 @@ const TEMPLATE_LACRADO = (
   parcelas,
   colorsTxt
 ) => `Eu tenho o ${model} lacrado, com garantia oficial Apple! 📦
-está saindo por ${price}${installmentsLine(parcelas)}.
+está saindo por ${price} no valor PROMOCIONAL á vista PIX/DINHEIRO ou ${installmentsLine(parcelas)} no cartão.
 
 ${colorsTxt ? `🎨 Cores disponíveis: ${colorsTxt}\n\n` : ""}📦 Ele é:
 ✅ Totalmente novo, lacrado na caixa original
@@ -3682,7 +3682,7 @@ const TEMPLATE_SEMINOVO = (
   parcelas,
   colorsTxt
 ) => `Eu tenho o ${model} seminovo, em perfeito estado! 📦
-está saindo por ${price}${installmentsLine(parcelas)}.
+está saindo por ${price}no valor PROMOCIONAL á vista PIX/DINHEIRO ou ${installmentsLine(parcelas)} no cartão.
 
 ${colorsTxt ? `🎨 Cores disponíveis: ${colorsTxt}\n\n` : ""}📦 Seminovos:
 ✅ 6 meses de garantia pela loja
@@ -3758,8 +3758,7 @@ ${modelForMessage(item)}
 
 De ${formatBRL(oldValue)} por apenas ${formatBRL(newValue)}${installmentsLine(parcelas)}.
 
-⚡ Condição promocional por tempo limitado e sujeita à disponibilidade.
-📲 Chame agora para garantir!`;
+⚡ Condição promocional por tempo limitado - PEÇAS ÚNICAS ATÉ DURAR O ESTOQUE.🚨`;
 }
 
 /* =====================================================
