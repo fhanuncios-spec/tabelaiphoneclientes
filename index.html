@@ -4048,7 +4048,7 @@ function cardHtml(item,key,cfg){
 
           <div class="calc-field full">
             <label>Nome da promoção</label>
-            <input class="promo-name" type="text" value="OFERTA ESPECIAL" />
+            <input class="promo-name" type="text" value="" />
           </div>
 
           <div class="calc-field">
@@ -4308,7 +4308,7 @@ function renderBlock(container,cfg,parsed){
 
         const title =
           box?.querySelector(".promo-name")?.value ||
-          "OFERTA ESPECIAL";
+          "ESSE MODELO ESTÁ NO ESQUENTA BLACK";
 
         const oldValue =
           parseBRL(
