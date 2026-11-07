@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -1339,6 +1340,21 @@
         grid-column:span 1;
       }
     }
+
+    /* Banner principal + pesquisa com opções em tempo real */
+    .catalog-hero{margin:0 0 16px;border-radius:23px;overflow:hidden;background:#090909;border:1px solid #242424;box-shadow:0 12px 30px #00000015;aspect-ratio:1600/480}
+    .catalog-hero img{width:100%;height:100%;object-fit:cover;display:block}
+    .filter-field.wide{position:relative}
+    .smart-suggestions{position:absolute;left:0;right:0;top:100%;z-index:80;max-height:370px;overflow-y:auto;background:#fff;border:1px solid #dedee2;border-radius:14px;box-shadow:0 18px 45px #0002;padding:5px}
+    .smart-suggestions[hidden]{display:none!important}
+    .smart-option{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 12px;text-align:left;width:100%;background:white;border:0;border-bottom:1px solid #eee;padding:11px 12px;color:#171717;cursor:pointer}
+    .smart-option:last-child{border-bottom:none}
+    .smart-option:hover,.smart-option:focus{background:#f1f7f4;outline:none}
+    .smart-option-title{font-size:13px;font-weight:800;line-height:1.3}
+    .smart-option-meta{font-size:11px;color:#6c6c6c;line-height:1.4;grid-column:1}
+    .smart-option-price{font-weight:900;font-size:13px;white-space:nowrap;grid-column:2;grid-row:1/3;color:#06783f}
+    .smart-hint{padding:10px 12px;font-size:12px;color:#666}
+    @media(max-width:700px){.catalog-hero{aspect-ratio:2/1;border-radius:15px}.catalog-hero img{object-position:left center}.smart-suggestions{max-height:320px}.smart-option-price{font-size:12px}}
   </style>
 </head>
 
@@ -1348,17 +1364,20 @@
   <div class="header-inner">
     <div class="title">
       <h1>Tabela Consultório do iPhone</h1>
-      <small>Valores à vista e simulação de parcelamento de 1x a 18x.</small>
+      <small>Valores à vista e simulação de parcelamento de 1x a 21x.</small>
     </div>
 
     <div class="head-actions">
       <button class="toggleAll" id="toggleAllBtn" type="button">🔽 Abrir todas</button>
-      <div class="pill" id="updatedPill">📌 Atualização: hoje</div>
+      <div class="pill" id="updatedPill">📌 Tabela atualizada: 07/11/2026 às 11:40</div>
     </div>
   </div>
 </header>
 
 <div class="wrap">
+  <section class="catalog-hero" aria-label="Tabela de iPhones">
+    <img src="banner_tabela_iphones.png" alt="Tabela de iPhones – Consulte modelos, cores, fornecedores e preços" />
+  </section>
 
   <section class="calculator" id="topCalculator">
 
@@ -1506,12 +1525,18 @@
     <div class="filters-grid">
 
       <div class="filter-field wide">
-        <label for="filterSearch">Pesquisa</label>
+        <label for="filterSearch">Pesquisa inteligente — modelo, cor e fornecedor</label>
         <input
           id="filterSearch"
           type="text"
-          placeholder="Buscar iPhone, AirPods, Apple Pencil, cor, loja..."
+          placeholder="Digite: iPhone 16 Pro Max, azul, BR10..."
+          autocomplete="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-controls="searchSuggestions"
+          aria-expanded="false"
         />
+        <div id="searchSuggestions" class="smart-suggestions" role="listbox" hidden></div>
       </div>
 
       <div class="filter-field">
@@ -1715,7 +1740,10 @@ const CARD_FEES = {
     15:0.1306,
     16:0.1375,
     17:0.1444,
-    18:0.1513
+    18:0.1513,
+    19:0.1577,
+    20:0.1646,
+    21:0.1714
   }
 };
 
@@ -1948,18 +1976,18 @@ function calcInstallmentFromCash(cashValue,n){
     ? cashValue
     : cashValue / (1 - fee);
 
-  const parcela = total / n;
+  const parcela = Math.round((total / n + Number.EPSILON) * 100) / 100;
 
   return {
-    total:Number(total.toFixed(2)),
-    parcela:Number(parcela.toFixed(2))
+    total:Number((parcela * n).toFixed(2)),
+    parcela
   };
 }
 
 function installmentOptionsFromValue(cashValue){
   const result = [];
 
-  for(let n = 1; n <= 18; n++){
+  for(let n = 1; n <= 21; n++){
     const calc = calcInstallmentFromCash(cashValue,n);
 
     if(!calc) continue;
@@ -4076,10 +4104,6 @@ function cardHtml(item,key,cfg){
           💳 Ver parcelas
         </button>
 
-        <button class="copy" type="button" data-toggle-simulation="1">
-          🧮 Simular entrada
-        </button>
-
         <button class="copy" type="button" data-toggle-promotion="1">
           🔥 Criar promoção
         </button>
@@ -4090,10 +4114,6 @@ function cardHtml(item,key,cfg){
 
         <button class="copy" type="button" data-order-key="${escapeHtml(key)}">
           ✅ Gerar pedido
-        </button>
-
-        <button class="copy" type="button" data-image-key="${escapeHtml(key)}">
-          🖼️ Copiar imagem
         </button>
 
       </div>
@@ -4259,13 +4279,13 @@ function renderBlock(container,cfg,parsed){
           </div>
 
           <div class="block-sub">
-            Copie texto, simule, crie promoção ou gere pedido
+            Copie texto, crie promoção ou gere pedido
           </div>
 
         </div>
 
         <div class="block-sub block-sub-stack">
-          <span>Parcelamento de 1x a 18x</span>
+          <span>Parcelamento de 1x a 21x</span>
           <span>Valores à vista</span>
         </div>
 
@@ -4441,29 +4461,6 @@ function bindCardPanels(){
         paymentButton.textContent = open
           ? "💳 Ocultar parcelas"
           : "💳 Ver parcelas";
-      }
-
-      return;
-    }
-
-    const simulationButton = event.target.closest("[data-toggle-simulation]");
-
-    if(simulationButton){
-      const card = simulationButton.closest(".card");
-      const panel = card?.querySelector(".simulation-panel");
-
-      if(panel){
-        const open = panel.classList.toggle("show");
-
-        simulationButton.textContent = open
-          ? "🧮 Ocultar simulação"
-          : "🧮 Simular entrada";
-
-        if(open){
-          renderMiniSimulation(
-            panel.querySelector("[data-mini-calc]")
-          );
-        }
       }
 
       return;
@@ -5026,7 +5023,7 @@ function bindTopCalculator(){
     () => {
       selectTopInstallments(
         Array.from(
-          {length:18},
+          {length:21},
           (_,index) => index + 1
         )
       );
@@ -5122,7 +5119,7 @@ function fillOrderInstallmentOptions(){
   select.innerHTML =
     `<option value="">Sem parcelas</option>`;
 
-  for(let n = 1; n <= 18; n++){
+  for(let n = 1; n <= 21; n++){
     const option = document.createElement("option");
 
     option.value = String(n);
@@ -5372,17 +5369,91 @@ function bindOrderModal(){
   );
 }
 
+
+/* =====================================================
+   PESQUISA INTELIGENTE COM SUGESTÕES DE FORNECEDORES
+===================================================== */
+function bindSmartSearch(allItems){
+  const input = document.getElementById("filterSearch");
+  const menu = document.getElementById("searchSuggestions");
+  if(!input || !menu) return;
+  const catalog = allItems.filter(item =>
+    normalizeText(item.category) === "iphone" &&
+    Number.isFinite(item._priceNumber) && item._priceNumber > 0
+  );
+
+  function close(){
+    menu.hidden = true;
+    input.setAttribute("aria-expanded","false");
+  }
+  function update(){
+    const text = normalizeText(input.value);
+    if(!text){close();return;}
+    const words = text.split(/\s+/).filter(Boolean);
+    const matches = catalog.filter(item =>
+      words.every(word => item._searchBlob.includes(word))
+    ).sort((a,b)=>a._priceNumber-b._priceNumber).slice(0,25);
+    if(!matches.length){
+      menu.innerHTML = '<div class="smart-hint">Nenhum iPhone encontrado. Experimente outro modelo ou cor.</div>';
+      menu.hidden = false;
+      input.setAttribute("aria-expanded","true");
+      return;
+    }
+    menu.innerHTML = matches.map((item,index)=>{
+      const condition = item.status === "UPGRADE" ? "Upgrade da loja" :
+        item.status === "SEMINOVOS" ? "Seminovo" : "Lacrado";
+      return `<button type="button" class="smart-option" role="option" data-suggest-index="${index}">
+        <span class="smart-option-title">${escapeHtml(item._model)} ${escapeHtml(item._capacity)}</span>
+        <span class="smart-option-meta">${escapeHtml(item.source)} · ${escapeHtml(condition)} · ${escapeHtml(item._colors.join(" / ") || "Cor não informada")}</span>
+        <span class="smart-option-price">${escapeHtml(item.price)}</span>
+      </button>`;
+    }).join("");
+    menu.hidden = false;
+    input.setAttribute("aria-expanded","true");
+    menu.querySelectorAll("[data-suggest-index]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const chosen=matches[Number(button.dataset.suggestIndex)];
+        input.value=[chosen._model,chosen._capacity,chosen._colors[0]||"",chosen.source].filter(Boolean).join(" ");
+        // Remove outros filtros para mostrar o resultado escolhido
+        ["filterModel","filterCapacity","filterColor","filterStatus","filterMin","filterMax"].forEach(id=>{
+          const element=document.getElementById(id);if(element) element.value="";
+        });
+        close();applyFilters();
+        const card=[...document.querySelectorAll('[data-card="1"]')].find(el=>el.style.display!=="none");
+        if(card){
+          card.closest('details.cat')?.setAttribute('open','');
+          card.closest('details.line')?.setAttribute('open','');
+          card.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+      });
+    });
+  }
+  input.addEventListener('input',update);
+  input.addEventListener('focus',update);
+  input.addEventListener('keydown',event=>{
+    if(event.key==='Escape')close();
+    if(event.key==='Enter' && !menu.hidden){
+      const first=menu.querySelector('[data-suggest-index]');
+      if(first){event.preventDefault();first.click();}
+    }
+  });
+  document.addEventListener('click',event=>{
+    if(!input.contains(event.target)&&!menu.contains(event.target)) close();
+  });
+}
+
 /* =====================================================
    RENDER
 ===================================================== */
 
+const TABELA_ATUALIZADA_EM = "07/11/2026 às 11:40";
+
 function formatUpdatedPill(){
-  const date = new Date();
 
   document.getElementById(
     "updatedPill"
   ).textContent =
-    `📌 Atualização: ${date.toLocaleDateString("pt-BR")}`;
+    `📌 Tabela atualizada: ${TABELA_ATUALIZADA_EM}`;
 }
 
 function render(){
@@ -5531,6 +5602,7 @@ function render(){
   });
 
   bindFilters(allItems);
+  bindSmartSearch(allItems);
   applyFilters();
 }
 
