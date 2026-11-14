@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -2837,6 +2836,9 @@ function cleanHeaderText(line){
 
 function isStatusHeader(line){
   const t = cleanHeaderText(line);
+  // Linhas de produtos (ex.: iPhone Duo 256GB lacrado) não são cabeçalhos.
+  const produto = stripItemIcon(line).replace(/^[^\p{L}\p{N}]+/u, "").trim();
+  if(/^(?:iPhone\s*)?(?:11|12|13|14|15|16|17|18)(?:e\b|\b)|^(?:iPhone\s*)?(?:Duo|Air)\b/i.test(produto)) return false;
 
   return (
     t.includes("SEMINOVO") ||
@@ -3229,7 +3231,7 @@ function parseQualityList(rawText,sourceName){
       .replace(/^[^\p{L}\p{N}]+/u,"")
       .trim();
 
-    return /^(?:iPhone\s*)?(?:11|12|13|14|15|16|17|18)(?:e\b|\b)/i.test(value);
+    return /^(?:iPhone\s*)?(?:(?:11|12|13|14|15|16|17|18)(?:e\b|\b)|Duo\b|Air\b)/i.test(value);
   }
 
   function addItem(title,detailLines,itemStatus){
