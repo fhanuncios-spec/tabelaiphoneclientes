@@ -5382,7 +5382,8 @@ function render(){
   );
 
   const parsedManga = parseList(
-    RAW_MANGA,
+    // O Manga envia alguns iPhones sem o marcador 📍; padronizar somente nesta lista.
+    RAW_MANGA.replace(/^(?=iPhone\s+(?:11|12|13|14|15|16|17|18)\b)/gmi,"📍 "),
     "MANGA"
   );
 
